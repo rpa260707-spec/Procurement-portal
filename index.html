@@ -433,6 +433,130 @@ footer b{ color:var(--text-2); font-weight:700; }
            animation:rise .55s cubic-bezier(.2,.7,.3,1) forwards; }
   @keyframes rise{ to{ opacity:1; transform:none; } }
 }
+
+/* ---------------- 포털 검색 ---------------- */
+.portal-search{
+  position:relative; display:flex; align-items:center; gap:10px;
+  margin-top:22px; max-width:560px;
+  background:var(--surface); border:1px solid var(--border-strong);
+  border-radius:14px; padding:0 14px; height:50px;
+  box-shadow:var(--shadow-sm);
+  transition:border-color .16s, box-shadow .16s;
+}
+.portal-search:focus-within{
+  border-color:var(--brand);
+  box-shadow:0 0 0 3.5px color-mix(in srgb, var(--brand) 16%, transparent);
+}
+.portal-search svg{ width:18px; height:18px; flex:none; color:var(--text-3); }
+.portal-search input{
+  flex:1; min-width:0; height:100%; border:0; background:transparent;
+  font-family:inherit; font-size:14.5px; color:var(--text);
+}
+.portal-search input:focus{ outline:none; }
+.portal-search input::placeholder{ color:var(--text-3); }
+.portal-search button{
+  flex:none; width:26px; height:26px; border-radius:8px; border:0; cursor:pointer;
+  background:var(--surface-3); color:var(--text-2); font-size:12px; line-height:1;
+}
+.portal-search button:hover{ background:var(--border); color:var(--text); }
+.portal-search__hint{
+  margin:10px 2px 0; font-size:12.5px; color:var(--text-3); font-weight:700;
+}
+.dimmed{ display:none !important; }
+.linkgroup.dimmed, .section-h.dimmed{ display:none !important; }
+
+/* ---------------- 실시간 현황 ---------------- */
+.livestat{
+  position:relative; z-index:2;
+  margin-top:18px; padding-top:16px;
+  border-top:1px dashed var(--border-strong);
+}
+.livestat__grid{
+  display:grid; gap:9px; grid-template-columns:repeat(3, minmax(0,1fr));
+}
+.ls{
+  display:block; padding:10px 11px; border-radius:var(--r-md);
+  background:var(--surface-2); border:1px solid transparent;
+  transition:background .16s, border-color .16s, transform .16s;
+}
+.ls:hover{
+  background:var(--accent-soft);
+  border-color:color-mix(in srgb, var(--accent) 34%, transparent);
+  transform:translateY(-2px);
+}
+.ls__k{ display:block; font-size:11px; color:var(--text-3); font-weight:700; white-space:nowrap; }
+.ls__v{
+  display:block; margin-top:2px; font-size:21px; font-weight:800;
+  letter-spacing:-.04em; line-height:1.15; color:var(--text);
+  font-variant-numeric:tabular-nums;
+}
+.ls:hover .ls__v{ color:var(--accent); }
+.ls__v .unit{ font-size:12px; font-weight:700; color:var(--text-3); margin-left:2px; letter-spacing:0; }
+.ls__s{
+  display:block; margin-top:1px; font-size:11px; color:var(--text-3);
+  font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis;
+}
+.livestat__years{
+  margin-top:10px; display:flex; gap:7px; flex-wrap:wrap;
+}
+.yrchip{
+  display:inline-flex; align-items:baseline; gap:5px;
+  padding:5px 10px; border-radius:999px;
+  background:var(--surface-2); border:1px solid var(--border);
+  font-size:11.5px; font-weight:700; color:var(--text-3);
+}
+.yrchip b{ font-size:12.5px; font-weight:800; color:var(--text-2); font-variant-numeric:tabular-nums; }
+.livestat__foot{
+  margin-top:10px; font-size:11.5px; color:var(--text-3); font-weight:600;
+  display:flex; align-items:center; gap:6px;
+}
+.livestat__foot.err{ color:var(--warn); }
+
+/* ---------------- 시세 위젯 (환율 · 유가) ---------------- */
+.section-h--market{ align-items:center; justify-content:space-between; gap:14px 20px; }
+.section-h__t{ min-width:0; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+.market{ display:flex; gap:9px; flex-wrap:wrap; }
+.mkt{
+  min-width:118px; padding:9px 13px; border-radius:var(--r-md);
+  background:var(--surface); border:1px solid var(--border);
+  box-shadow:var(--shadow-sm); line-height:1.25;
+}
+.mkt__k{
+  display:block; font-size:10.5px; font-weight:800; letter-spacing:.02em;
+  color:var(--text-3); text-transform:uppercase; white-space:nowrap;
+}
+.mkt__v{
+  display:block; margin-top:3px; font-size:17px; font-weight:800;
+  letter-spacing:-.035em; color:var(--text);
+  font-variant-numeric:tabular-nums; white-space:nowrap;
+}
+.mkt__c{
+  display:block; margin-top:1px; font-size:11px; font-weight:800;
+  font-variant-numeric:tabular-nums; color:var(--text-3); white-space:nowrap;
+}
+.mkt__c.up{ color:#d9384a; }      /* 국내 관행: 상승 빨강 */
+.mkt__c.down{ color:#1565d8; }    /* 하락 파랑 */
+:root[data-theme="dark"] .mkt__c.up{ color:#ff7b8a; }
+:root[data-theme="dark"] .mkt__c.down{ color:#6aa9ff; }
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .mkt__c.up{ color:#ff7b8a; }
+  :root:not([data-theme="light"]) .mkt__c.down{ color:#6aa9ff; }
+}
+.market__note{
+  width:100%; font-size:10.5px; color:var(--text-3); font-weight:600;
+  text-align:right; margin-top:2px;
+}
+@media (max-width:700px){
+  .section-h--market{ align-items:flex-start; }
+  .market{ width:100%; }
+  .mkt{ flex:1 1 118px; min-width:0; }
+  .market__note{ text-align:left; }
+}
+@media (max-width:420px){
+  .livestat__grid{ grid-template-columns:1fr 1fr; }
+  .livestat__grid .ls:last-child{ grid-column:1/-1; }
+}
 </style>
 </head>
 <body>
@@ -476,6 +600,13 @@ footer b{ color:var(--text-2); font-weight:700; }
     <p>업무 매뉴얼부터 구매 현황, 화환배송 관리, 소모품 단가 조회까지 —
        전략구매팀이 매일 사용하는 4개의 시스템을 한 화면에 모았습니다.
        카드를 누르면 해당 시스템으로 바로 이동합니다.</p>
+
+    <div class="portal-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+      <input type="search" id="psearch" placeholder="시스템 · 바로가기 검색 (예: 입찰, 화환, 단가, 나라장터)" aria-label="포털 검색" autocomplete="off" />
+      <button type="button" id="psearch-clear" class="hidden" aria-label="검색어 지우기">✕</button>
+    </div>
+    <p class="portal-search__hint hidden" id="psearch-hint"></p>
   </section>
 
   <!-- 메인 카드 4종 -->
@@ -575,6 +706,29 @@ footer b{ color:var(--text-2); font-weight:700; }
         <a class="chip" href="https://flower-delivery-dashboard-nu.vercel.app">경조사 지침</a>
       </div>
 
+      <!-- 화환 실시간 현황 (대시보드 API에서 집계) -->
+      <div class="livestat" id="wreath-live">
+        <div class="livestat__grid">
+          <a class="ls" href="https://flower-delivery-dashboard-nu.vercel.app">
+            <span class="ls__k" id="w-year-k">올해 누계</span>
+            <span class="ls__v" id="w-year">—</span>
+            <span class="ls__s" id="w-year-amt">&nbsp;</span>
+          </a>
+          <a class="ls" href="https://flower-delivery-dashboard-nu.vercel.app">
+            <span class="ls__k" id="w-month-k">이번 달</span>
+            <span class="ls__v" id="w-month">—</span>
+            <span class="ls__s" id="w-month-amt">&nbsp;</span>
+          </a>
+          <a class="ls" href="https://flower-delivery-dashboard-nu.vercel.app">
+            <span class="ls__k">최근 7일 접수</span>
+            <span class="ls__v" id="w-recent">—</span>
+            <span class="ls__s" id="w-last">&nbsp;</span>
+          </a>
+        </div>
+        <div class="livestat__years hidden" id="w-years"></div>
+        <div class="livestat__foot" id="w-foot">현황 불러오는 중…</div>
+      </div>
+
       <div class="card__meta">
         <span class="live">운영중</span>
         <span class="host">flower-delivery-dashboard-nu.vercel.app</span>
@@ -623,9 +777,28 @@ footer b{ color:var(--text-2); font-weight:700; }
          [대외]  공개 사이트 주소라 그대로 동작합니다.
                  쓰지 않는 사이트는 <a> 블록째 삭제하면 됩니다.
        ============================================================ -->
-  <div class="section-h">
-    <h2>구매 · 계약 업무 바로가기</h2>
-    <span>업무에 필요한 사내 · 대외 시스템 모음 · 모두 새 창으로 열립니다</span>
+  <div class="section-h section-h--market">
+    <div class="section-h__t">
+      <h2>구매 · 계약 업무 바로가기</h2>
+      <span>업무에 필요한 사내 · 대외 시스템 모음 · 모두 새 창으로 열립니다</span>
+    </div>
+    <div class="market" id="market">
+      <div class="mkt" data-k="usdkrw">
+        <span class="mkt__k">원 / 달러</span>
+        <span class="mkt__v">—</span>
+        <span class="mkt__c">&nbsp;</span>
+      </div>
+      <div class="mkt" data-k="jpykrw">
+        <span class="mkt__k">원 / 100엔</span>
+        <span class="mkt__v">—</span>
+        <span class="mkt__c">&nbsp;</span>
+      </div>
+      <div class="mkt" data-k="brent">
+        <span class="mkt__k">브렌트유</span>
+        <span class="mkt__v">—</span>
+        <span class="mkt__c">&nbsp;</span>
+      </div>
+    </div>
   </div>
 
   <!-- 사내 시스템 -->
@@ -802,6 +975,209 @@ footer b{ color:var(--text-2); font-weight:700; }
     }
     requestAnimationFrame(step);
   });
+})();
+</script>
+<script>
+/* =========================================================
+   v2: 포털 검색 + 화환배송 실시간 현황
+   ========================================================= */
+(function(){
+  "use strict";
+  var $  = function(s){ return document.querySelector(s); };
+  var $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
+
+  /* ---------------- 1. 포털 검색 ---------------- */
+  // 카드와 바로가기의 텍스트를 미리 모아 두고 입력할 때마다 걸러 냅니다.
+  var targets = [];
+
+  $$('.card').forEach(function(el){
+    targets.push({ el: el, text: el.textContent.replace(/\s+/g,' ').toLowerCase() });
+  });
+  $$('.quick a').forEach(function(el){
+    targets.push({ el: el, text: el.textContent.replace(/\s+/g,' ').toLowerCase() });
+  });
+
+  var input = $('#psearch');
+  var clearBtn = $('#psearch-clear');
+  var hint = $('#psearch-hint');
+
+  function runSearch(){
+    var q = input.value.trim().toLowerCase();
+    clearBtn.classList.toggle('hidden', !q);
+
+    if(!q){
+      targets.forEach(function(t){ t.el.classList.remove('dimmed'); });
+      $$('.linkgroup, .section-h').forEach(function(el){ el.classList.remove('dimmed'); });
+      hint.classList.add('hidden');
+      return;
+    }
+
+    var hits = 0;
+    targets.forEach(function(t){
+      var on = t.text.indexOf(q) >= 0;
+      t.el.classList.toggle('dimmed', !on);
+      if(on) hits++;
+    });
+
+    // 항목이 하나도 안 남은 그룹은 제목까지 같이 숨깁니다.
+    $$('.linkgroup').forEach(function(g){
+      var any = g.querySelectorAll('.quick a:not(.dimmed)').length > 0;
+      g.classList.toggle('dimmed', !any);
+    });
+
+    hint.classList.remove('hidden');
+    hint.textContent = hits > 0
+      ? '검색 결과 ' + hits + '건'
+      : '"' + input.value.trim() + '" 에 대한 결과가 없습니다.';
+  }
+
+  input.addEventListener('input', runSearch);
+  input.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){ input.value=''; runSearch(); input.blur(); }
+  });
+  clearBtn.addEventListener('click', function(){ input.value=''; runSearch(); input.focus(); });
+
+  /* ---------------- 2. 화환배송 현황 ---------------- */
+  var WREATH_API = 'https://flower-delivery-dashboard-nu.vercel.app/api/deliveries';
+
+  function won(n){
+    if(!n) return '0원';
+    if(n >= 10000) return Math.round(n/10000).toLocaleString('ko-KR') + '만원';
+    return n.toLocaleString('ko-KR') + '원';
+  }
+  function num(n){ return (n||0).toLocaleString('ko-KR'); }
+  function ymd(d){
+    var p = function(v){ return v<10 ? '0'+v : ''+v; };
+    return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
+  }
+
+  function renderWreath(rows){
+    var today = new Date();
+    var thisYear  = String(today.getFullYear());
+    var thisMonth = ymd(today).slice(0,7);
+    var weekAgo   = ymd(new Date(today.getTime() - 7*24*60*60*1000));
+
+    var byYear = {}, monthCnt = 0, monthAmt = 0, recent = 0, lastDate = '';
+
+    rows.forEach(function(r){
+      var d = String(r.date || '').slice(0,10);
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(d)) return;
+      var price = Number(r.price) || 0;
+      var y = d.slice(0,4);
+
+      if(!byYear[y]) byYear[y] = { c:0, a:0 };
+      byYear[y].c++; byYear[y].a += price;
+
+      if(d.slice(0,7) === thisMonth){ monthCnt++; monthAmt += price; }
+      if(d >= weekAgo) recent++;
+      if(d > lastDate) lastDate = d;
+    });
+
+    var cur = byYear[thisYear] || { c:0, a:0 };
+
+    $('#w-year-k').textContent  = thisYear.slice(2) + '년 누계';
+    $('#w-year').innerHTML      = num(cur.c) + '<span class="unit">건</span>';
+    $('#w-year-amt').textContent = won(cur.a);
+
+    $('#w-month-k').textContent  = (today.getMonth()+1) + '월';
+    $('#w-month').innerHTML      = num(monthCnt) + '<span class="unit">건</span>';
+    $('#w-month-amt').textContent = won(monthAmt);
+
+    $('#w-recent').innerHTML = num(recent) + '<span class="unit">건</span>';
+    $('#w-last').textContent = lastDate ? '최근 ' + lastDate.slice(5).replace('-','.') : ' ';
+
+    // 최근 3개년 비교 — 데이터가 없는 해는 '—' 로 표시해 공백을 드러냅니다.
+    var chips = [];
+    for(var i = 2; i >= 0; i--){
+      var y = String(today.getFullYear() - i);
+      var v = byYear[y];
+      chips.push('<span class="yrchip">' + y.slice(2) + '년 '
+        + (v ? '<b>' + num(v.c) + '건</b> · <b>' + won(v.a) + '</b>' : '<b>—</b>')
+        + '</span>');
+    }
+    var yearsEl = $('#w-years');
+    yearsEl.innerHTML = chips.join('');
+    yearsEl.classList.remove('hidden');
+
+    var foot = $('#w-foot');
+    foot.className = 'livestat__foot';
+    foot.textContent = '대시보드 실시간 · 신청일 기준 · ' + ymd(today).replace(/-/g,'.') + ' 조회';
+  }
+
+  function failWreath(msg){
+    var foot = $('#w-foot');
+    foot.className = 'livestat__foot err';
+    foot.textContent = msg;
+  }
+
+  /* ---------------- 3. 환율 · 유가 시세 ---------------- */
+  // 값 표시 규칙: 원/달러·원100엔은 원화 소수 2자리, 브렌트유는 달러 소수 2자리
+  var MKT = {
+    usdkrw: { scale: 1,   fmt: function(v){ return v.toLocaleString('ko-KR',{minimumFractionDigits:2,maximumFractionDigits:2}); }, suffix:'원' },
+    jpykrw: { scale: 100, fmt: function(v){ return v.toLocaleString('ko-KR',{minimumFractionDigits:2,maximumFractionDigits:2}); }, suffix:'원' },
+    brent:  { scale: 1,   fmt: function(v){ return '$' + v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }, suffix:'' }
+  };
+
+  function renderMarket(data, fetchedAt){
+    var any = false;
+
+    Object.keys(MKT).forEach(function(k){
+      var box = document.querySelector('.mkt[data-k="' + k + '"]');
+      if(!box) return;
+      var d = data[k];
+      if(!d || !isFinite(d.value)) return;
+
+      any = true;
+      var cfg = MKT[k];
+      var v = d.value * cfg.scale;
+      box.querySelector('.mkt__v').textContent = cfg.fmt(v) + cfg.suffix;
+
+      var cEl = box.querySelector('.mkt__c');
+      if(d.prev && isFinite(d.prev) && d.prev > 0){
+        var prev = d.prev * cfg.scale;
+        var diff = v - prev;
+        var pct  = (diff / prev) * 100;
+        var up   = diff > 0;
+        cEl.className = 'mkt__c ' + (diff === 0 ? '' : (up ? 'up' : 'down'));
+        cEl.textContent = (diff === 0 ? '' : (up ? '▲ ' : '▼ '))
+          + Math.abs(diff).toLocaleString('ko-KR',{maximumFractionDigits:2})
+          + ' (' + (up?'+':'') + pct.toFixed(2) + '%)';
+      }else{
+        cEl.className = 'mkt__c';
+        cEl.textContent = '전일 대비 —';
+      }
+    });
+
+    var note = document.createElement('div');
+    note.className = 'market__note';
+    note.textContent = any
+      ? '시세 기준 ' + new Date(fetchedAt || Date.now()).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) + ' · 참고용'
+      : '시세를 불러오지 못했습니다.';
+    var mk = $('#market');
+    var old = mk.querySelector('.market__note');
+    if(old) old.remove();
+    mk.appendChild(note);
+  }
+
+  fetch('/api/market', { cache:'no-store' })
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(j){
+      if(!j || !j.data) throw new Error('bad payload');
+      renderMarket(j.data, j.fetchedAt);
+    })
+    .catch(function(){
+      renderMarket({}, null);
+    });
+
+  fetch(WREATH_API, { cache:'no-store' })
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(j){
+      if(!j || j.success !== true || !Array.isArray(j.data)) throw new Error('bad payload');
+      renderWreath(j.data);
+    })
+    .catch(function(){
+      failWreath('현황을 불러오지 못했습니다. 카드를 눌러 대시보드에서 확인하세요.');
+    });
 })();
 </script>
 </body>
