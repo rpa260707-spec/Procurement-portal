@@ -10,8 +10,11 @@ const SYMBOLS = {
   usdkrw: 'USDKRW=X',   // 원/달러
   jpykrw: 'JPYKRW=X',   // 원/엔 (100엔 환산은 화면에서 처리)
   eurkrw: 'EURKRW=X',   // 원/유로
+  cnykrw: 'CNYKRW=X',   // 원/위안 — 중국 수입 자재·소모품이 많아 함께 봅니다
   brent:  'BZ=F',       // 브렌트유 선물 (USD/배럴)
-  wti:    'CL=F'        // 서부텍사스유(WTI) 선물 (USD/배럴)
+  wti:    'CL=F',       // 서부텍사스유(WTI) 선물 (USD/배럴)
+  gold:   'GC=F',       // 금 선물 (USD/트로이온스)
+  copper: 'HG=F'        // 구리 선물 (USD/파운드) — 전선·부품 단가 선행지표
 };
 
 async function fetchYahoo(symbol) {
