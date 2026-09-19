@@ -54,11 +54,19 @@ export default async function handler(req, res) {
          "k":"B040043205","code":"...","name":"와이프올 …","n":150,"qty":1452,
          "amt":37625080,"first":"2024-03-28","last":"2026-08-25","lp":24990
        n = 발주 횟수 · qty = 수량 · amt = 누적 금액 · lp = 최근 단가 */
-    const REC = /"k":"([^"]+)","code":"[^"]*","name":"((?:[^"\\]|\\.)*)","n":(\d+),"qty":(-?\d+),"amt":(-?\d+),"first":"([^"]*)","last":"([^"]*)","lp":(-?\d+)/g;
+    const REC = /"k":"([^"]+)","code":"[^"]*","name":"((?:[^"\\]|\\.)*)","n":(\d+),"qty":(-?\d+),"amt":(-?\d+),"first":"([^"]*)","last":"([^"]*)","lp":(-?\d+),"mn":-?\d+,"mx":-?\d+,"ven":"((?:[^"\\]|\\.)*)","vn":\d+,"biz":"([^"]*)","kind":"([^"]*)"/g;
+
+    /* 품목 종류(kind) : 소모품 2,205 · 시약 1,565 · 인쇄물 72 · 가스 51 · 공기구비품 5
+       `공기구비품` 은 시험장비 · 데스크탑 · 모니터 묶음이라 소모품 통계에서 뺍니다.
+       (여기에 「어린이놀이기구 시험장비 3.2억」 같은 건이 들어 있어 순위를 왜곡했습니다) */
+    const KEEP = ['소모품', '시약', '가스', '인쇄물'];
 
     const recs = [];
     let m;
     while ((m = REC.exec(html)) !== null) {
+      const kind = m[11] || '';
+      if (!KEEP.includes(kind)) continue;
+
       recs.push({
         code: m[1],
         name: m[2].replace(/\\"/g, '"').replace(/\\\\/g, '\\'),
@@ -66,13 +74,17 @@ export default async function handler(req, res) {
         qty: Number(m[4]) || 0,
         amount: Number(m[5]) || 0,
         last: m[7] || '',
-        unitPrice: Number(m[8]) || 0
+        unitPrice: Number(m[8]) || 0,
+        vendor: (m[9] || '').replace(/\\"/g, '"'),
+        kind
       });
     }
 
     const trim = (r) => ({
       code: r.code,
-      name: r.name.length > 60 ? r.name.slice(0, 59) + '…' : r.name,
+      name: r.name.length > 120 ? r.name.slice(0, 119) + '…' : r.name,
+      kind: r.kind,
+      vendor: r.vendor,
       count: r.count,
       qty: r.qty,
       amount: r.amount,
@@ -85,16 +97,16 @@ export default async function handler(req, res) {
       .sort((a, b) => b.count - a.count)
       .slice(0, 30)
       .sort((a, b) => b.unitPrice - a.unitPrice)
-      .slice(0, 6)
+      .slice(0, 8)
       .map(trim);
 
     // 단가 높은 품목 (최근 단가 기준)
-    const byPrice = [...recs].sort((a, b) => b.unitPrice - a.unitPrice).slice(0, 6).map(trim);
+    const byPrice = [...recs].sort((a, b) => b.unitPrice - a.unitPrice).slice(0, 8).map(trim);
 
     // 누적 발주액 큰 품목
-    const byAmount = [...recs].sort((a, b) => b.amount - a.amount).slice(0, 6).map(trim);
+    const byAmount = [...recs].sort((a, b) => b.amount - a.amount).slice(0, 8).map(trim);
 
-    const byLast = [...recs].sort((a, b) => String(b.last).localeCompare(String(a.last))).slice(0, 6).map(trim);
+    const byLast = [...recs].sort((a, b) => String(b.last).localeCompare(String(a.last))).slice(0, 8).map(trim);
 
     const totalAmount = recs.reduce((s, r) => s + r.amount, 0);
 
