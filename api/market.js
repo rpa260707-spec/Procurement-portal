@@ -9,7 +9,9 @@ const YAHOO = 'https://query1.finance.yahoo.com/v8/finance/chart/';
 const SYMBOLS = {
   usdkrw: 'USDKRW=X',   // 원/달러
   jpykrw: 'JPYKRW=X',   // 원/엔 (100엔 환산은 화면에서 처리)
-  brent:  'BZ=F'        // 브렌트유 선물 (USD/배럴)
+  eurkrw: 'EURKRW=X',   // 원/유로
+  brent:  'BZ=F',       // 브렌트유 선물 (USD/배럴)
+  wti:    'CL=F'        // 서부텍사스유(WTI) 선물 (USD/배럴)
 };
 
 async function fetchYahoo(symbol) {
@@ -47,10 +49,16 @@ async function fetchFxFallback() {
   const jpy = Number(j?.rates?.JPY);
   if (!isFinite(krw) || !isFinite(jpy)) throw new Error('fx fallback no rates');
 
-  return {
+  const eur = Number(j?.rates?.EUR);
+
+  const out = {
     usdkrw: { value: krw, prev: null, currency: 'KRW', at: Date.now() },
     jpykrw: { value: krw / jpy, prev: null, currency: 'KRW', at: Date.now() }
   };
+  if (isFinite(eur) && eur > 0) {
+    out.eurkrw = { value: krw / eur, prev: null, currency: 'KRW', at: Date.now() };
+  }
+  return out;
 }
 
 export default async function handler(req, res) {
@@ -73,12 +81,13 @@ export default async function handler(req, res) {
     else failed.push(key);
   });
 
-  // 환율이 둘 다 실패하면 예비 소스로 한 번 더 시도합니다.
-  if (!out.usdkrw || !out.jpykrw) {
+  // 환율이 하나라도 실패하면 예비 소스로 한 번 더 시도합니다.
+  if (!out.usdkrw || !out.jpykrw || !out.eurkrw) {
     try {
       const fb = await fetchFxFallback();
       if (!out.usdkrw) { out.usdkrw = fb.usdkrw; }
       if (!out.jpykrw) { out.jpykrw = fb.jpykrw; }
+      if (!out.eurkrw && fb.eurkrw) { out.eurkrw = fb.eurkrw; }
     } catch (e) {
       // 예비 소스까지 실패하면 그대로 둡니다.
     }

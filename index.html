@@ -260,6 +260,23 @@ a{ color:inherit; text-decoration:none; }
 .card--dash  { --accent:var(--c-dash);   --accent-soft:var(--c-dash-soft); }
 .card--wreath{ --accent:var(--c-wreath); --accent-soft:var(--c-wreath-soft); }
 .card--supply{ --accent:var(--c-supply); --accent-soft:var(--c-supply-soft); }
+.card--house { --accent:#b4530f; --accent-soft:#fdeee0; }
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .card--house{ --accent:#f0a06a; --accent-soft:#3a2415; }
+}
+:root[data-theme="dark"] .card--house{ --accent:#f0a06a; --accent-soft:#3a2415; }
+
+/* 준비중 카드 */
+.card--soon{ opacity:.9; }
+.card--soon .card__title{ color:var(--text-2); }
+.soon-box{
+  position:relative; z-index:2; margin-top:18px;
+  padding:16px 14px; border-radius:var(--r-md);
+  background:var(--surface-2); border:1px dashed var(--border-strong);
+  text-align:center;
+}
+.soon-box b{ display:block; font-size:13.5px; font-weight:800; color:var(--text-2); }
+.soon-box span{ display:block; margin-top:4px; font-size:12px; color:var(--text-3); }
 
 .card__head{ display:flex; align-items:flex-start; gap:15px; }
 .card__icon{
@@ -527,6 +544,90 @@ footer b{ color:var(--text-2); font-weight:700; }
 }
 .livestat__foot.err{ color:var(--warn); }
 
+/* ---------------- 입찰구매 현황 (씨마켓 요약) ---------------- */
+.bidbar{
+  margin-top:20px; padding:18px 20px;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r-lg); box-shadow:var(--shadow-sm);
+}
+.bidbar__head{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+.bidbar__head h2{ margin:0; font-size:15.5px; font-weight:800; letter-spacing:-.025em; }
+.bidbar__meta{ font-size:12px; color:var(--text-3); font-weight:700; }
+.bidbar__link{
+  margin-left:auto; display:inline-flex; align-items:center; gap:5px;
+  font-size:12px; font-weight:800; color:var(--brand);
+  padding:5px 11px; border-radius:999px;
+  background:var(--brand-soft); border:1px solid color-mix(in srgb, var(--brand) 22%, transparent);
+  transition:filter .15s;
+}
+.bidbar__link:hover{ filter:brightness(.96); }
+.bidbar__link svg{ width:11px; height:11px; }
+
+.bidbar__kpis{ display:grid; gap:10px; grid-template-columns:repeat(auto-fit, minmax(128px,1fr)); }
+.bkpi{
+  padding:11px 13px; border-radius:var(--r-md);
+  background:var(--surface-2); border:1px solid var(--border);
+}
+.bkpi__k{ display:block; font-size:11.5px; color:var(--text-3); font-weight:700; white-space:nowrap; }
+.bkpi__v{
+  display:block; margin-top:3px; font-size:22px; font-weight:800; letter-spacing:-.04em;
+  color:var(--text); font-variant-numeric:tabular-nums; line-height:1.15;
+}
+.bkpi__v .unit{ font-size:12px; font-weight:700; color:var(--text-3); margin-left:2px; letter-spacing:0; }
+.bkpi.warn .bkpi__v{ color:var(--warn); }
+
+.bidbar__fail{ margin-top:16px; padding-top:14px; border-top:1px dashed var(--border-strong); }
+.bfail__h{
+  display:flex; align-items:baseline; gap:8px; margin-bottom:9px;
+  font-size:12.5px; font-weight:800; color:var(--text-2);
+}
+.bfail__h span{ font-size:11.5px; color:var(--text-3); font-weight:700; margin-left:auto; }
+.bfail__row{ display:grid; grid-template-columns:minmax(0,1fr) 92px; gap:10px; align-items:center; margin:6px 0; }
+.bfail__l{ font-size:12.5px; color:var(--text-2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.bfail__bar{ grid-column:1/-1; height:7px; border-radius:999px; background:var(--surface-3); overflow:hidden; margin-top:-2px; }
+.bfail__bar i{ display:block; height:100%; border-radius:999px; background:linear-gradient(90deg, #e07a3f, #d9534f); }
+.bfail__n{ font-size:12px; font-weight:800; color:var(--text-3); text-align:right;
+           font-variant-numeric:tabular-nums; white-space:nowrap; }
+@media (max-width:560px){
+  .bidbar__link{ margin-left:0; }
+}
+
+/* ---------------- 소모품 검색 결과 미리보기 ---------------- */
+.sresults{
+  position:relative; z-index:2; margin-top:12px;
+  border:1px solid var(--border); border-radius:var(--r-md);
+  background:var(--surface-2); overflow:hidden;
+}
+.sres{
+  display:flex; align-items:baseline; gap:10px;
+  padding:9px 12px; border-bottom:1px solid var(--border);
+  font-size:13px; transition:background .14s;
+}
+.sres:last-child{ border-bottom:0; }
+.sres:hover{ background:var(--accent-soft); }
+.sres__n{
+  flex:1 1 auto; min-width:0; font-weight:700; color:var(--text);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.sres__s{
+  flex:none; font-size:11.5px; color:var(--text-3); font-weight:600;
+  max-width:38%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.sres__p{
+  flex:none; font-weight:800; color:var(--accent);
+  font-variant-numeric:tabular-nums; white-space:nowrap;
+}
+.sres--msg{
+  display:block; padding:11px 12px; font-size:12.5px;
+  color:var(--text-3); font-weight:600; line-height:1.6;
+}
+.sres--more{
+  display:block; padding:9px 12px; text-align:center;
+  font-size:12px; font-weight:800; color:var(--accent);
+  background:var(--surface); border-top:1px solid var(--border);
+}
+.sres--more:hover{ background:var(--accent-soft); }
+
 /* ---------------- 시세 위젯 (환율 · 유가) ---------------- */
 .section-h--market{ align-items:center; justify-content:space-between; gap:14px 20px; }
 .section-h__t{ min-width:0; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
@@ -633,13 +734,37 @@ footer b{ color:var(--text-2); font-weight:700; }
           <span class="mkt__v">—</span>
           <span class="mkt__c">&nbsp;</span>
         </div>
+        <div class="mkt" data-k="eurkrw">
+          <span class="mkt__k">원 / 유로</span>
+          <span class="mkt__v">—</span>
+          <span class="mkt__c">&nbsp;</span>
+        </div>
         <div class="mkt" data-k="brent">
           <span class="mkt__k">브렌트유</span>
           <span class="mkt__v">—</span>
           <span class="mkt__c">&nbsp;</span>
         </div>
+        <div class="mkt" data-k="wti">
+          <span class="mkt__k">WTI (서부텍사스)</span>
+          <span class="mkt__v">—</span>
+          <span class="mkt__c">&nbsp;</span>
+        </div>
       </div>
     </div>
+
+    <!-- 입찰구매 현황 (씨마켓플레이스 요약) -->
+    <section class="bidbar" id="bidbar" hidden>
+      <div class="bidbar__head">
+        <h2>입찰구매 현황</h2>
+        <span class="bidbar__meta" id="bid-meta"></span>
+        <a class="bidbar__link" href="https://www.c-market.net/buyer/dashboard" target="_blank" rel="noopener noreferrer">
+          씨마켓에서 보기
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </a>
+      </div>
+      <div class="bidbar__kpis" id="bid-kpis"></div>
+      <div class="bidbar__fail" id="bid-fail"></div>
+    </section>
     <p class="portal-search__hint hidden" id="psearch-hint"></p>
   </section>
 
@@ -769,6 +894,33 @@ footer b{ color:var(--text-2); font-weight:700; }
       </div>
     </article>
 
+    <!-- 5. 비거주지 사택 임차현황  →  배포 후 주소 교체 -->
+    <article class="card card--house card--soon reveal" style="animation-delay:.25s">
+      <div class="card__head">
+        <div class="card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/>
+          </svg>
+        </div>
+        <div class="card__titles">
+          <h2 class="card__title">
+            비거주지 사택 임차현황
+          </h2>
+          <p class="card__desc">비거주 근무직원 사택 임차계약과 만료 예정을 관리합니다. 담당자 · 주소는 기본 마스킹 처리됩니다.</p>
+        </div>
+      </div>
+
+      <div class="soon-box">
+        <b>배포 준비중</b>
+        <span>Vercel 배포 후 이 카드의 주소만 교체하면 됩니다.</span>
+      </div>
+
+      <div class="card__meta">
+        <span class="soon">준비중</span>
+        <span class="host">주소 미정</span>
+      </div>
+    </article>
+
     <!-- 4. 소모품 가격검색  →  price-sand.vercel.app -->
     <article class="card card--supply reveal" style="animation-delay:.2s">
       <div class="card__head">
@@ -796,6 +948,9 @@ footer b{ color:var(--text-2); font-weight:700; }
           검색
         </button>
       </form>
+
+      <!-- 검색어 입력 시 간략 결과 미리보기 -->
+      <div class="sresults hidden" id="s-results"></div>
 
       <div class="livestat" id="supply-live">
         <div class="livestat__grid" style="grid-template-columns:1fr">
@@ -911,35 +1066,6 @@ footer b{ color:var(--text-2); font-weight:700; }
     </nav>
   </div>
 
-  <!-- 공지 -->
-  <div class="section-h">
-    <h2>팀 공지</h2>
-    <span>전략구매팀 안내사항</span>
-  </div>
-  <div class="notice">
-    <ul>
-      <li>
-        <span class="badge badge--new">NEW</span>
-        <a class="t" href="#">2026년 하반기 소모품 단가계약 갱신 결과 안내</a>
-        <span class="d">09.14</span>
-      </li>
-      <li>
-        <span class="badge badge--warn">마감</span>
-        <a class="t" href="#">3분기 구매 실적 취합 — 부서별 제출 기한 안내</a>
-        <span class="d">09.12</span>
-      </li>
-      <li>
-        <span class="badge">안내</span>
-        <a class="t" href="#">경조사 화환 신청 절차 변경 (온라인 신청 일원화)</a>
-        <span class="d">09.08</span>
-      </li>
-      <li>
-        <span class="badge">안내</span>
-        <a class="t" href="#">구매 업무 매뉴얼 v3.2 개정본 배포</a>
-        <span class="d">09.01</span>
-      </li>
-    </ul>
-  </div>
 
 </main>
 
@@ -1124,12 +1250,58 @@ footer b{ color:var(--text-2); font-weight:700; }
     foot.textContent = msg;
   }
 
+  /* ---------------- 2-1. 입찰구매 현황 (씨마켓 요약) ----------------
+     씨마켓 바이어 대시보드는 로그인 뒤에 있는 데이터라 포털에서 직접 못 읽습니다.
+     그래서 data/bid.json 의 값을 읽어 표시합니다. 수치가 바뀌면 그 파일만 고치면 됩니다. */
+  fetch('data/bid.json', { cache:'no-store' })
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(b){
+      var k = b.kpi || {};
+      var items = [
+        { k:'진행중',          v:k.inProgress,  u:'건' },
+        { k:'전체 마감',       v:k.closed,      u:'건' },
+        { k:'총 계약',         v:k.contracts,   u:'건' },
+        { k:'카드 결제 대기',  v:k.cardPending, u:'건', warn:(k.cardPending||0) > 0 },
+        { k:'계산서 · 영수증', v:k.invoices,    u:'건' }
+      ].filter(function(x){ return x.v != null; });
+
+      $('#bid-kpis').innerHTML = items.map(function(x){
+        return '<div class="bkpi' + (x.warn ? ' warn' : '') + '">'
+          + '<span class="bkpi__k">' + x.k + '</span>'
+          + '<span class="bkpi__v">' + num(x.v) + '<span class="unit">' + x.u + '</span></span>'
+          + '</div>';
+      }).join('');
+
+      var f = b.failed || {};
+      var rs = Array.isArray(f.reasons) ? f.reasons : [];
+      var tot = f.total || rs.reduce(function(s, r){ return s + (r.count || 0); }, 0);
+
+      $('#bid-fail').innerHTML = rs.length
+        ? '<div class="bfail__h">유찰 사유 분포<span>총 유찰 ' + num(tot) + '건 기준</span></div>'
+          + rs.map(function(r){
+              var pct = tot ? (r.count / tot * 100) : 0;
+              return '<div class="bfail__row">'
+                + '<span class="bfail__l">' + esc(r.label) + '</span>'
+                + '<span class="bfail__n">' + num(r.count) + '건 · ' + pct.toFixed(1) + '%</span>'
+                + '<span class="bfail__bar"><i style="width:' + pct.toFixed(1) + '%"></i></span>'
+                + '</div>';
+            }).join('')
+        : '';
+
+      $('#bid-meta').textContent = (b.period ? b.period + ' · ' : '')
+        + (b.source || '씨마켓플레이스') + ' · ' + (b.asOf || '') + ' 기준';
+      $('#bidbar').hidden = false;
+    })
+    .catch(function(){ /* 파일이 없으면 섹션을 숨긴 채 둡니다 */ });
+
   /* ---------------- 3. 환율 · 유가 시세 ---------------- */
-  // 값 표시 규칙: 원/달러·원100엔은 원화 소수 2자리, 브렌트유는 달러 소수 2자리
+  // 값 표시 규칙: 환율은 원화 소수 2자리, 유가는 달러 소수 2자리
   var MKT = {
     usdkrw: { scale: 1,   fmt: function(v){ return v.toLocaleString('ko-KR',{minimumFractionDigits:2,maximumFractionDigits:2}); }, suffix:'원' },
     jpykrw: { scale: 100, fmt: function(v){ return v.toLocaleString('ko-KR',{minimumFractionDigits:2,maximumFractionDigits:2}); }, suffix:'원' },
-    brent:  { scale: 1,   fmt: function(v){ return '$' + v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }, suffix:'' }
+    eurkrw: { scale: 1,   fmt: function(v){ return v.toLocaleString('ko-KR',{minimumFractionDigits:2,maximumFractionDigits:2}); }, suffix:'원' },
+    brent:  { scale: 1,   fmt: function(v){ return '$' + v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }, suffix:'' },
+    wti:    { scale: 1,   fmt: function(v){ return '$' + v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }, suffix:'' }
   };
 
   function renderMarket(data, fetchedAt){
@@ -1188,6 +1360,77 @@ footer b{ color:var(--text-2); font-weight:700; }
       $('#s-count').textContent = '—';
       $('#s-note').textContent = '가격검색에서 확인';
     });
+
+  /* ---------------- 5. 소모품 검색 결과 미리보기 ----------------
+     price-sand 의 /api/search?q= 를 호출합니다.
+     아직 해당 API 가 없으면 안내 문구만 보여주고, 검색 버튼(폼 제출)은
+     기존대로 가격검색 사이트를 새 창으로 엽니다. */
+  var SUPPLY_SEARCH = 'https://price-sand.vercel.app/api/search';
+  var sTimer = null;
+  var sApiAlive = null;   // null=미확인, true=사용가능, false=없음
+
+  function sResHtml(rows, q){
+    var top = rows.slice(0, 5).map(function(it){
+      var name  = it.name || it.item || it.품명 || '-';
+      var spec  = it.spec || it.maker || it.규격 || it.제조사 || '';
+      var price = it.price != null ? it.price : (it.단가 != null ? it.단가 : null);
+      return '<div class="sres">'
+        + '<span class="sres__n">' + esc(name) + '</span>'
+        + (spec ? '<span class="sres__s">' + esc(spec) + '</span>' : '')
+        + (price != null ? '<span class="sres__p">' + num(price) + '원</span>' : '')
+        + '</div>';
+    }).join('');
+
+    var more = rows.length > 5
+      ? '<a class="sres--more" href="https://price-sand.vercel.app/?q=' + encodeURIComponent(q) + '" target="_blank" rel="noopener">전체 ' + num(rows.length) + '건 보기 →</a>'
+      : '';
+
+    return top + more;
+  }
+  function esc(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  var sBox = document.querySelector('.card--supply .searchbar input');
+  var sOut = $('#s-results');
+
+  if(sBox && sOut){
+    sBox.addEventListener('input', function(){
+      var q = sBox.value.trim();
+      clearTimeout(sTimer);
+
+      if(q.length < 2){ sOut.classList.add('hidden'); sOut.innerHTML = ''; return; }
+      if(sApiAlive === false){
+        sOut.classList.remove('hidden');
+        sOut.innerHTML = '<span class="sres--msg">가격검색 사이트에 검색 API가 없어 미리보기를 표시할 수 없습니다.<br>[검색] 을 누르면 가격검색에서 결과를 확인할 수 있습니다.</span>';
+        return;
+      }
+
+      sTimer = setTimeout(function(){
+        sOut.classList.remove('hidden');
+        sOut.innerHTML = '<span class="sres--msg">검색 중…</span>';
+
+        fetch(SUPPLY_SEARCH + '?q=' + encodeURIComponent(q), { cache:'no-store' })
+          .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+          .then(function(j){
+            sApiAlive = true;
+            var rows = Array.isArray(j) ? j : (Array.isArray(j.items) ? j.items : (Array.isArray(j.data) ? j.data : []));
+            sOut.innerHTML = rows.length
+              ? sResHtml(rows, q)
+              : '<span class="sres--msg">"' + esc(q) + '" 에 해당하는 품목이 없습니다.</span>';
+          })
+          .catch(function(){
+            sApiAlive = false;
+            sOut.innerHTML = '<span class="sres--msg">가격검색 사이트에 검색 API가 없어 미리보기를 표시할 수 없습니다.<br>[검색] 을 누르면 가격검색에서 결과를 확인할 수 있습니다.</span>';
+          });
+      }, 350);
+    });
+
+    sBox.addEventListener('keydown', function(e){
+      if(e.key === 'Escape'){ sBox.value = ''; sOut.classList.add('hidden'); sOut.innerHTML = ''; }
+    });
+  }
 
   fetch('/api/market', { cache:'no-store' })
     .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
