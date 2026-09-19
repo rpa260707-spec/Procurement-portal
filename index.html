@@ -1077,13 +1077,13 @@ footer b{ color:var(--text-2); font-weight:700; }
 
       <div class="chips">
         <a class="chip" href="https://app.boxhero.io/team/249001/mode/2" target="_blank" rel="noopener">재고 현황</a>
-        <a class="chip" href="https://app.boxhero.io/team/249001/mode/2" target="_blank" rel="noopener">입출고 내역</a>
+        <a class="chip" href="https://app.boxhero.io/team/249001/mode/2#/ltx" target="_blank" rel="noopener">입출고 내역</a>
         <a class="chip" href="https://app.boxhero.io/team/249001/mode/2" target="_blank" rel="noopener">창고별 집계</a>
       </div>
 
       <!-- 오늘 입출고 내역 (포털 서버 함수가 한 번만 조회) -->
       <div class="livestat" id="box-live">
-        <div class="boxtoday">
+        <div class="boxtoday hidden" id="b-today">
           <span class="boxtoday__k">오늘 <b id="b-date">—</b></span>
           <span class="boxtoday__v"><span id="b-in">—</span><em>입고</em></span>
           <span class="boxtoday__v"><span id="b-out">—</span><em>출고</em></span>
@@ -1430,9 +1430,11 @@ footer b{ color:var(--text-2); font-weight:700; }
     // 요약 타일 없이 입출고 내역만 줄로 보여 줍니다.
     var rows = s.recent || [];
     var list = $('#b-list');
-    var team = s.teamUrl || 'https://app.boxhero.io/team/249001/mode/2';
+    // 거래별 링크가 없을 때는 박스히어로 '입출고' 화면으로 보냅니다.
+    var team = 'https://app.boxhero.io/team/249001/mode/2#/ltx';
 
-    // 박스히어로 앱의 「오늘」 카드와 같은 형태 — 오늘 입고 / 출고 건수
+    // 박스히어로 앱의 「오늘」 카드와 같은 형태 — 데이터가 온 뒤에만 보입니다
+    $('#b-today').classList.remove('hidden');
     var asOf = String(s.asOf || '');
     $('#b-date').textContent = asOf ? (parseInt(asOf.slice(5,7),10) + '월 ' + parseInt(asOf.slice(8,10),10) + '일') : '';
     $('#b-in').textContent  = num(s.inCount || 0);
