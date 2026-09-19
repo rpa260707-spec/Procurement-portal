@@ -13,6 +13,10 @@
 //   설정 후 반드시 Redeploy 해야 반영됩니다.
 
 const BASE = 'https://rest.boxhero-app.com';
+
+// 박스히어로 본 서비스 주소 (팀 249001 · LOCATION 모드).
+// PC 는 웹앱으로, 폰은 유니버설 링크로 박스히어로 앱이 열립니다.
+const TEAM_URL = 'https://app.boxhero.io/team/249001/mode/2';
 const TYPE_KO = { in: '입고', out: '출고', move: '이동', adjust: '조정' };
 
 function setHeaders(res) {
@@ -122,7 +126,10 @@ export default async function handler(req, res) {
         from: t?.from_location?.name || '',
         to: t?.to_location?.name || '',
         memo: t?.memo || '',
-        partner: t?.partner?.name || ''
+        partner: t?.partner?.name || '',
+        // 박스히어로가 주는 그 거래의 바로가기 주소.
+        // 폰에서 누르면 유니버설 링크로 박스히어로 앱이 열립니다.
+        url: t?.url || ''
       };
     });
 
@@ -141,7 +148,8 @@ export default async function handler(req, res) {
       total: rows.length,
       inCount, outCount, inQty, outQty,
       recent,
-      lastDate
+      lastDate,
+      teamUrl: TEAM_URL
     });
   } catch (error) {
     console.error('[boxhero summary error]', error);
