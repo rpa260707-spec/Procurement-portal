@@ -1094,7 +1094,7 @@ footer b{ color:var(--text-2); font-weight:700; }
       <div class="chips">
         <a class="chip" href="https://app.boxhero.io/team/249001/mode/2" target="_blank" rel="noopener">재고 현황</a>
         <a class="chip" href="https://app.boxhero.io/team/249001/mode/2#/ltx" target="_blank" rel="noopener">입출고 내역</a>
-        <a class="chip" href="https://app.boxhero.io/team/249001/mode/2" target="_blank" rel="noopener">창고별 집계</a>
+        <a class="chip" href="https://app.boxhero.io/team/249001/mode/2" target="_blank" rel="noopener">박스히어로 ↗</a>
       </div>
 
       <!-- 오늘 입출고 내역 (포털 서버 함수가 한 번만 조회) -->
@@ -1509,6 +1509,9 @@ footer b{ color:var(--text-2); font-weight:700; }
      ⚠️ 토큰에는 쓰기 권한이 있습니다. 넣은 사람 브라우저에만 남고 서버로는 가지 않습니다. */
   var BOX_LS   = 'fiti.boxhero.token';
   var BOX_REST = 'https://rest.boxhero-app.com';
+  // 재고관리 현황(06)에 있는 읽기 전용 프록시. 토큰이 그 프로젝트 환경변수에 있어서
+  // 포털은 토큰 없이 여기서 숫자만 받아옵니다. (CORS 열려 있음)
+  var BOX_PROXY = 'https://boxhero-fiti.vercel.app/api/boxhero';
   var BOX_TEAM = 'https://app.boxhero.io/team/249001/mode/2';
   var TYPE_KO  = { in:'입고', out:'출고', move:'이동', adjust:'조정' };
 
@@ -1526,10 +1529,22 @@ footer b{ color:var(--text-2); font-weight:700; }
   }
 
   // 서버 함수와 똑같은 모양으로 만들어 renderBox 가 그대로 쓰게 합니다.
+  /* token 이 있으면 박스히어로를 직접, 없으면 재고관리 현황(06)의 읽기 전용 프록시를 씁니다.
+     프록시 쪽에는 토큰이 서버 환경변수로 들어 있어 포털은 아무것도 안 넣어도 됩니다. */
+  function boxGet(path, token){
+    if(token){
+      return fetch(BOX_REST + '/' + path, { headers:{ Authorization:'Bearer ' + token } });
+    }
+    var i = path.indexOf('?');
+    var qs = new URLSearchParams(i < 0 ? '' : path.slice(i + 1));
+    qs.set('path', i < 0 ? path : path.slice(0, i));
+    return fetch(BOX_PROXY + '?' + qs, { cache:'no-store' });
+  }
+
   function loadBoxDirect(token){
     var h = { Authorization: 'Bearer ' + token };
 
-    return fetch(BOX_REST + '/v1/transactions?limit=100', { headers:h })
+    return boxGet('v1/transactions?limit=100', token)
       .then(function(r){
         if(r.status === 401) throw new Error('토큰이 올바르지 않습니다. 다시 넣어 주세요.');
         if(!r.ok) throw new Error('박스히어로 API ' + r.status);
@@ -1543,7 +1558,7 @@ footer b{ color:var(--text-2); font-weight:700; }
 
         // 품목명은 상세에만 있습니다. 화면에 띄울 5건만 받습니다.
         // 총 재고 수 — 창고 목록 한 번이면 됩니다(창고마다 quantity 가 있음)
-        var stockP = fetch(BOX_REST + '/v1/locations?limit=100', { headers:h })
+        var stockP = boxGet('v1/locations?limit=100', token)
           .then(function(r){ return r.ok ? r.json() : null; })
           .then(function(lj){
             var locs = (lj && lj.items) || [];
@@ -1552,7 +1567,7 @@ footer b{ color:var(--text-2); font-weight:700; }
           .catch(function(){ return null; });
 
         return Promise.all(head.map(function(t){
-          return fetch(BOX_REST + '/v1/transactions/' + t.id, { headers:h })
+          return boxGet('v1/transactions/' + t.id, token)
             .then(function(r){ return r.ok ? r.json() : null; })
             .then(function(d){ return d && (d.item || d); })
             .catch(function(){ return null; });
@@ -1627,27 +1642,31 @@ footer b{ color:var(--text-2); font-weight:700; }
     $('#b-foot').className = 'livestat__foot';
     $('#b-foot').textContent = '현황 불러오는 중…';
 
-    // 1순위: 서버 환경변수. 2순위: 이 브라우저에 넣어 둔 토큰.
+    /* 순서
+       1. 포털 자체 서버 함수 (포털에 BOXHERO_API_TOKEN 이 있을 때)
+       2. 재고관리 현황(06)의 읽기 전용 프록시 — 토큰이 거기 한 곳에만 있으면 됩니다
+       3. 그래도 안 되면 이 브라우저에 넣어 둔 토큰
+       4. 다 없으면 「토큰 넣기」 버튼 */
+    function viaBrowserToken(){
+      var t = boxToken();
+      if(!t){ boxNeedToken('박스히어로 토큰이 없습니다.'); return; }
+      loadBoxDirect(t).then(renderBox)
+        .catch(function(e){ boxNeedToken(e.message || '불러오지 못했습니다.'); });
+    }
+
+    function viaProxy(){
+      loadBoxDirect(null)          // token 없이 → 06 프록시 경유
+        .then(renderBox)
+        .catch(viaBrowserToken);
+    }
+
     fetch('/api/boxhero', { cache:'no-store' })
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(s){
         if(s && s.success === true){ renderBox(s); return; }
-
-        var t = boxToken();
-        if(!t){
-          boxNeedToken('박스히어로 토큰이 없습니다.');
-          return;
-        }
-        return loadBoxDirect(t)
-          .then(renderBox)
-          .catch(function(e){ boxNeedToken(e.message || '불러오지 못했습니다.'); });
+        viaProxy();
       })
-      .catch(function(){
-        var t = boxToken();
-        if(!t){ boxNeedToken('박스히어로 토큰이 없습니다.'); return; }
-        loadBoxDirect(t).then(renderBox)
-          .catch(function(e){ boxNeedToken(e.message || '불러오지 못했습니다.'); });
-      });
+      .catch(viaProxy);
   }
 
   startBox();
