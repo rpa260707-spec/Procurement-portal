@@ -919,6 +919,29 @@ footer b{ color:var(--text-2); font-weight:700; }
         <a class="chip" href="https://housing-zeta-sage.vercel.app/">지원금 지침</a>
       </div>
 
+      <!-- 사택 실시간 현황 (집계 전용 API · 담당자명·주소는 내려오지 않음) -->
+      <div class="livestat" id="house-live">
+        <div class="livestat__grid">
+          <a class="ls" href="https://housing-zeta-sage.vercel.app/">
+            <span class="ls__k">유효 임차</span>
+            <span class="ls__v" id="h-active">—</span>
+            <span class="ls__s" id="h-total">&nbsp;</span>
+          </a>
+          <a class="ls" href="https://housing-zeta-sage.vercel.app/">
+            <span class="ls__k">3개월 내 만료</span>
+            <span class="ls__v" id="h-expire">—</span>
+            <span class="ls__s" id="h-nearest">&nbsp;</span>
+          </a>
+          <a class="ls" href="https://housing-zeta-sage.vercel.app/">
+            <span class="ls__k">월세 합계</span>
+            <span class="ls__v" id="h-rent">—</span>
+            <span class="ls__s" id="h-deposit">&nbsp;</span>
+          </a>
+        </div>
+        <div class="livestat__years hidden" id="h-regions"></div>
+        <div class="livestat__foot" id="h-foot">현황 불러오는 중…</div>
+      </div>
+
       <div class="card__meta">
         <span class="live">운영중</span>
         <span class="host">housing-zeta-sage.vercel.app</span>
@@ -1254,6 +1277,54 @@ footer b{ color:var(--text-2); font-weight:700; }
     foot.textContent = msg;
   }
 
+  /* ---------------- 2-0. 사택 임차현황 ----------------
+     화환과 같은 집계 전용 엔드포인트입니다.
+     담당자명 · 주소지 · 임대인 계좌는 내려오지 않고 건수와 금액만 옵니다. */
+  var HOUSE_API = 'https://housing-zeta-sage.vercel.app/api/summary';
+
+  function renderHouse(s){
+    var asOf = String(s.asOf || ymd(new Date()));
+
+    $('#h-active').innerHTML = num(s.active) + '<span class="unit">건</span>';
+    $('#h-total').textContent = '전체 ' + num(s.total) + '건';
+
+    $('#h-expire').innerHTML = num(s.expiring90) + '<span class="unit">건</span>';
+    $('#h-nearest').textContent = s.nearestEnd
+      ? '가장 이른 ' + String(s.nearestEnd).slice(5).replace('-', '.')
+      : ' ';
+
+    $('#h-rent').textContent = won(s.totalRent);
+    $('#h-deposit').textContent = '보증금 ' + won(s.totalDeposit);
+
+    // 지역별 건수 — 서울 / 청주 / 그 밖의 지역
+    var regions = s.regions || {};
+    var order = ['서울', '청주', '그 밖의 지역'];
+    var chips = order.map(function(k){
+      return '<span class="yrchip">' + k + ' <b>' + num(regions[k]) + '건</b></span>';
+    });
+    var regionsEl = $('#h-regions');
+    regionsEl.innerHTML = chips.join('');
+    regionsEl.classList.remove('hidden');
+
+    var foot = $('#h-foot');
+    foot.className = 'livestat__foot';
+    foot.textContent = '대시보드 실시간 · ' + (s.basis || '계약종료일 기준') + ' · ' + asOf.replace(/-/g,'.') + ' 조회';
+  }
+
+  function failHouse(msg){
+    var foot = $('#h-foot');
+    foot.className = 'livestat__foot err';
+    foot.textContent = msg;
+  }
+
+  fetch(HOUSE_API, { cache:'no-store' })
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(s){
+      if(!s || s.success !== true) throw new Error('bad payload');
+      renderHouse(s);
+    })
+    .catch(function(){ failHouse('사택 현황을 불러오지 못했습니다. 대시보드에서 확인하세요.'); });
+
   /* ---------------- 2-1. 입찰구매 현황 (씨마켓 요약) ----------------
      씨마켓 바이어 대시보드는 로그인 뒤에 있는 데이터라 포털에서 직접 못 읽습니다.
      그래서 data/bid.json 의 값을 읽어 표시합니다. 수치가 바뀌면 그 파일만 고치면 됩니다. */
@@ -1352,13 +1423,15 @@ footer b{ color:var(--text-2); font-weight:700; }
   /* ---------------- 4. 소모품 등록 품목 수 ----------------
      price-sand 에 집계 API 가 생기면 아래 주소만 살아나면 숫자가 채워집니다.
      (현재는 엔드포인트가 없어 '—' 로 표시됩니다) */
-  fetch('https://price-sand.vercel.app/api/summary', { cache:'no-store' })
+  /* price-sand 에는 집계 API 가 없고 데이터가 페이지 안에 들어 있습니다.
+     브라우저에서 직접 읽으면 CORS 에 막히므로 포털의 서버 함수(api/price.js)가
+     대신 받아서 숫자만 세어 줍니다. */
+  fetch('/api/price', { cache:'no-store' })
     .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
     .then(function(j){
-      var n = j && (j.count != null ? j.count : (j.total != null ? j.total : null));
-      if(n == null) throw new Error('no count');
-      $('#s-count').innerHTML = num(n) + '<span class="unit">종</span>';
-      $('#s-note').textContent = j.updatedAt ? ('갱신 ' + String(j.updatedAt).slice(5)) : '가격검색 실시간';
+      if(!j || j.success !== true || j.ordered == null) throw new Error('no count');
+      $('#s-count').innerHTML = num(j.ordered) + '<span class="unit">종</span>';
+      $('#s-note').textContent = '발주 이력 품목 · 단가 보유 ' + num(j.codes) + '종';
     })
     .catch(function(){
       $('#s-count').textContent = '—';
