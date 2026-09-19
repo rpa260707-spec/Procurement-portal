@@ -1951,7 +1951,7 @@ footer b{ color:var(--text-2); font-weight:700; }
       if(q.length < 2){ sOut.classList.add('hidden'); sOut.innerHTML = ''; return; }
       if(sApiAlive === false){
         sOut.classList.remove('hidden');
-        sOut.innerHTML = '<span class="sres--msg">가격검색 사이트에 검색 API가 없어 미리보기를 표시할 수 없습니다.<br>[검색] 을 누르면 가격검색에서 결과를 확인할 수 있습니다.</span>';
+        sOut.innerHTML = '<span class="sres--msg">미리보기를 불러오지 못했습니다.<br>[검색] 을 누르면 소모품 가격검색에서 결과를 확인할 수 있습니다.</span>';
         return;
       }
 
@@ -1970,7 +1970,7 @@ footer b{ color:var(--text-2); font-weight:700; }
           })
           .catch(function(){
             sApiAlive = false;
-            sOut.innerHTML = '<span class="sres--msg">가격검색 사이트에 검색 API가 없어 미리보기를 표시할 수 없습니다.<br>[검색] 을 누르면 가격검색에서 결과를 확인할 수 있습니다.</span>';
+            sOut.innerHTML = '<span class="sres--msg">미리보기를 불러오지 못했습니다.<br>[검색] 을 누르면 소모품 가격검색에서 결과를 확인할 수 있습니다.</span>';
           });
       }, 350);
     });
