@@ -43,6 +43,8 @@
   --c-wreath-soft: #fde8ef;
   --c-supply:      #0d9488;
   --c-supply-soft: #dcf5f1;
+  --c-box:         #b45309;
+  --c-box-soft:    #fdf0dd;
 
   --ok:            #17936b;
   --warn:          #c77700;
@@ -68,6 +70,7 @@
     --c-dash:#59a5ff;   --c-dash-soft:#12243c;
     --c-wreath:#ff7aa6; --c-wreath-soft:#351723;
     --c-supply:#35c9b4; --c-supply-soft:#0e2d2a;
+    --c-box:#e0a45c; --c-box-soft:#33240c;
     --ok:#35c78e; --warn:#e5a13a;
     --shadow-sm:0 1px 2px rgba(0,0,0,.4);
     --shadow-md:0 6px 16px rgba(0,0,0,.45);
@@ -85,6 +88,7 @@
   --c-dash:#59a5ff;   --c-dash-soft:#12243c;
   --c-wreath:#ff7aa6; --c-wreath-soft:#351723;
   --c-supply:#35c9b4; --c-supply-soft:#0e2d2a;
+  --c-box:#e0a45c; --c-box-soft:#33240c;
   --ok:#35c78e; --warn:#e5a13a;
   --shadow-sm:0 1px 2px rgba(0,0,0,.4);
   --shadow-md:0 6px 16px rgba(0,0,0,.45);
@@ -260,6 +264,7 @@ a{ color:inherit; text-decoration:none; }
 .card--dash  { --accent:var(--c-dash);   --accent-soft:var(--c-dash-soft); }
 .card--wreath{ --accent:var(--c-wreath); --accent-soft:var(--c-wreath-soft); }
 .card--supply{ --accent:var(--c-supply); --accent-soft:var(--c-supply-soft); }
+.card--box{ --accent:var(--c-box); --accent-soft:var(--c-box-soft); }
 .card--house { --accent:#b4530f; --accent-soft:#fdeee0; }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]) .card--house{ --accent:#f0a06a; --accent-soft:#3a2415; }
@@ -543,6 +548,55 @@ footer b{ color:var(--text-2); font-weight:700; }
   display:flex; align-items:center; gap:6px;
 }
 .livestat__foot.err{ color:var(--warn); }
+
+/* ---------------- 박스히어로 입출고 내역 ---------------- */
+.txlist{ display:flex; flex-direction:column; }
+.tx{
+  display:flex; gap:10px; padding:10px 2px;
+  border-top:1px solid var(--border); text-decoration:none; color:inherit;
+}
+.tx:first-child{ border-top:0; }
+.tx:hover{ background:var(--surface-2); }
+.tx--empty{
+  justify-content:center; color:var(--text-3);
+  font-size:12px; font-weight:600; padding:18px 0;
+}
+.tx__mark{
+  flex:none; width:20px; height:20px; border-radius:6px;
+  display:grid; place-items:center; font-size:12px; font-weight:900;
+  background:var(--surface-2); color:var(--text-3);
+}
+.tx__mark--out{ background:#fdeaea; color:#c0392b; }
+.tx__mark--in{ background:#e7f6ee; color:#0f7a4a; }
+.tx__body{ min-width:0; display:flex; flex-direction:column; gap:2px; flex:1; }
+.tx__head{ display:flex; align-items:baseline; gap:8px; }
+.tx__type{ font-size:12.5px; font-weight:800; }
+.tx__type--out{ color:#c0392b; }
+.tx__type--in{ color:#0f7a4a; }
+.tx__when{
+  margin-left:auto; font-size:11px; color:var(--text-3);
+  font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap;
+}
+.tx__sum{ font-size:11.5px; color:var(--text-3); font-weight:600; }
+.tx__item{
+  font-size:12px; color:var(--text-2); font-weight:600;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.tx__more{ color:var(--text-3); font-weight:600; }
+.tx__loc{
+  font-size:11px; color:var(--text-3); font-weight:600;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .tx__mark--out{ background:#3a1a18; color:#f0857a; }
+  :root:not([data-theme="light"]) .tx__mark--in{ background:#12301f; color:#6ed49c; }
+  :root:not([data-theme="light"]) .tx__type--out{ color:#f0857a; }
+  :root:not([data-theme="light"]) .tx__type--in{ color:#6ed49c; }
+}
+:root[data-theme="dark"] .tx__mark--out{ background:#3a1a18; color:#f0857a; }
+:root[data-theme="dark"] .tx__mark--in{ background:#12301f; color:#6ed49c; }
+:root[data-theme="dark"] .tx__type--out{ color:#f0857a; }
+:root[data-theme="dark"] .tx__type--in{ color:#6ed49c; }
 
 /* ---------------- 입찰구매 현황 (씨마켓 요약) ---------------- */
 .bidbar{
@@ -995,6 +1049,43 @@ footer b{ color:var(--text-2); font-weight:700; }
       </div>
     </article>
 
+    <!-- 6. 박스히어로 입출고  →  boxhero-dashboard.vercel.app -->
+    <article class="card card--box reveal" style="animation-delay:.3s">
+      <div class="card__head">
+        <div class="card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5 12 12l9-4.5"/><path d="M12 12v9"/>
+          </svg>
+        </div>
+        <div class="card__titles">
+          <h2 class="card__title">
+            <a href="https://boxhero-dashboard.vercel.app/">박스히어로 재고 현황</a>
+            <span class="arrow" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+            </span>
+          </h2>
+          <p class="card__desc">창고별 재고와 입출고 내역을 관리합니다. 여기서는 <b>오늘 입출고</b>만 요약해 보여 줍니다.</p>
+        </div>
+      </div>
+
+      <div class="chips">
+        <a class="chip" href="https://boxhero-dashboard.vercel.app/">재고 현황</a>
+        <a class="chip" href="https://boxhero-dashboard.vercel.app/">입출고 내역</a>
+        <a class="chip" href="https://boxhero-dashboard.vercel.app/">창고별 집계</a>
+      </div>
+
+      <!-- 오늘 입출고 내역 (포털 서버 함수가 한 번만 조회) -->
+      <div class="livestat" id="box-live">
+        <div class="txlist" id="b-list"></div>
+        <div class="livestat__foot" id="b-foot">현황 불러오는 중…</div>
+      </div>
+
+      <div class="card__meta">
+        <span class="live">운영중</span>
+        <span class="host">boxhero-dashboard.vercel.app</span>
+      </div>
+    </article>
+
   </section>
 
   <!-- ============================================================
@@ -1316,6 +1407,65 @@ footer b{ color:var(--text-2); font-weight:700; }
     foot.className = 'livestat__foot err';
     foot.textContent = msg;
   }
+
+  /* ---------------- 2-2. 박스히어로 오늘 입출고 ----------------
+     박스히어로 대시보드는 화면을 그리기 전에 품목 전체(/v1/items)를 수십 번 받아서 느립니다.
+     포털에는 "오늘 무엇이 오갔는지"만 필요하므로, 포털 서버 함수(api/boxhero.js)가
+     /v1/transactions 를 한 번만 불러 오늘 것만 집계합니다. 토큰은 서버 환경변수에 있습니다. */
+  function renderBox(s){
+    // 요약 타일 없이 입출고 내역만 줄로 보여 줍니다.
+    var rows = s.recent || [];
+    var list = $('#b-list');
+
+    list.innerHTML = rows.length
+      ? rows.map(function(t){
+          var place = t.type === 'out' ? (t.from || t.to) : (t.to || t.from);
+          var item  = t.itemName
+            ? esc(t.itemName) + (t.moreCount ? ' <span class="tx__more">외 ' + t.moreCount + '건</span>' : '')
+            : '<span class="tx__more">품목 정보 없음</span>';
+
+          return '<a class="tx" href="https://boxhero-dashboard.vercel.app/">'
+            + '<span class="tx__mark tx__mark--' + t.type + '">' + (t.type === 'out' ? '↑' : t.type === 'in' ? '↓' : '·') + '</span>'
+            + '<span class="tx__body">'
+            +   '<span class="tx__head">'
+            +     '<b class="tx__type tx__type--' + t.type + '">' + t.typeLabel + '</b>'
+            +     '<span class="tx__when">' + t.date.slice(5).replace('-','.') + ' ' + t.time + '</span>'
+            +   '</span>'
+            +   '<span class="tx__sum">' + num(t.kinds) + '개 품목 / ' + num(t.qty) + '개</span>'
+            +   '<span class="tx__item">' + item + '</span>'
+            +   (place ? '<span class="tx__loc">' + esc(place) + (t.user ? ' · ' + esc(t.user) : '') + '</span>' : '')
+            + '</span></a>';
+        }).join('')
+      : '<div class="tx tx--empty">오늘 등록된 입출고가 없습니다</div>';
+
+    var foot = $('#b-foot');
+    foot.className = 'livestat__foot';
+    foot.textContent = s.total
+      ? ('오늘 ' + num(s.total) + '건 · ' + String(s.asOf).replace(/-/g,'.') + ' 기준')
+      : (s.lastDate
+          ? ('최근 입출고 ' + String(s.lastDate).replace(/-/g,'.') + ' · ' + String(s.asOf).replace(/-/g,'.') + ' 기준')
+          : (String(s.asOf).replace(/-/g,'.') + ' 기준'));
+  }
+
+  function failBox(msg){
+    var foot = $('#b-foot');
+    foot.className = 'livestat__foot err';
+    foot.textContent = msg;
+  }
+
+  fetch('/api/boxhero', { cache:'no-store' })
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(s){
+      if(!s) throw new Error('empty');
+      if(s.success !== true){
+        failBox(s.reason === 'no-token'
+          ? '박스히어로 토큰이 아직 설정되지 않았습니다.'
+          : (s.message || '박스히어로 현황을 불러오지 못했습니다.'));
+        return;
+      }
+      renderBox(s);
+    })
+    .catch(function(){ failBox('박스히어로 현황을 불러오지 못했습니다. 대시보드에서 확인하세요.'); });
 
   fetch(HOUSE_API, { cache:'no-store' })
     .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
