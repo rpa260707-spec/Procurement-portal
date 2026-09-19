@@ -1037,8 +1037,9 @@ footer b{ color:var(--text-2); font-weight:700; }
   });
   clearBtn.addEventListener('click', function(){ input.value=''; runSearch(); input.focus(); });
 
-  /* ---------------- 2. 화환배송 현황 ---------------- */
-  var WREATH_API = 'https://flower-delivery-dashboard-nu.vercel.app/api/deliveries';
+  /* ---------------- 2. 화환배송 현황 ----------------
+     집계 전용 엔드포인트입니다. 개인정보(고인·연락처·빈소)는 내려오지 않습니다. */
+  var WREATH_API = 'https://flower-delivery-dashboard-nu.vercel.app/api/summary';
 
   function won(n){
     if(!n) return '0원';
@@ -1051,48 +1052,34 @@ footer b{ color:var(--text-2); font-weight:700; }
     return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
   }
 
-  function renderWreath(rows){
-    var today = new Date();
-    var thisYear  = String(today.getFullYear());
-    var thisMonth = ymd(today).slice(0,7);
-    var weekAgo   = ymd(new Date(today.getTime() - 7*24*60*60*1000));
+  // /api/summary 가 이미 집계해서 주므로 여기서는 표시만 합니다.
+  function renderWreath(s){
+    var asOf = String(s.asOf || ymd(new Date()));
+    var thisYear = asOf.slice(0,4);
+    var monthNo  = parseInt(asOf.slice(5,7), 10);
 
-    var byYear = {}, monthCnt = 0, monthAmt = 0, recent = 0, lastDate = '';
+    var yr = s.thisYear || { count:0, amount:0 };
+    var mo = s.thisMonth || { count:0, amount:0 };
 
-    rows.forEach(function(r){
-      var d = String(r.date || '').slice(0,10);
-      if(!/^\d{4}-\d{2}-\d{2}$/.test(d)) return;
-      var price = Number(r.price) || 0;
-      var y = d.slice(0,4);
+    $('#w-year-k').textContent   = thisYear.slice(2) + '년 누계';
+    $('#w-year').innerHTML       = num(yr.count) + '<span class="unit">건</span>';
+    $('#w-year-amt').textContent = won(yr.amount);
 
-      if(!byYear[y]) byYear[y] = { c:0, a:0 };
-      byYear[y].c++; byYear[y].a += price;
+    $('#w-month-k').textContent   = monthNo + '월';
+    $('#w-month').innerHTML       = num(mo.count) + '<span class="unit">건</span>';
+    $('#w-month-amt').textContent = won(mo.amount);
 
-      if(d.slice(0,7) === thisMonth){ monthCnt++; monthAmt += price; }
-      if(d >= weekAgo) recent++;
-      if(d > lastDate) lastDate = d;
-    });
-
-    var cur = byYear[thisYear] || { c:0, a:0 };
-
-    $('#w-year-k').textContent  = thisYear.slice(2) + '년 누계';
-    $('#w-year').innerHTML      = num(cur.c) + '<span class="unit">건</span>';
-    $('#w-year-amt').textContent = won(cur.a);
-
-    $('#w-month-k').textContent  = (today.getMonth()+1) + '월';
-    $('#w-month').innerHTML      = num(monthCnt) + '<span class="unit">건</span>';
-    $('#w-month-amt').textContent = won(monthAmt);
-
-    $('#w-recent').innerHTML = num(recent) + '<span class="unit">건</span>';
-    $('#w-last').textContent = lastDate ? '최근 ' + lastDate.slice(5).replace('-','.') : ' ';
+    $('#w-recent').innerHTML = num(s.recent7) + '<span class="unit">건</span>';
+    $('#w-last').textContent = s.lastDate ? '최근 ' + String(s.lastDate).slice(5).replace('-','.') : ' ';
 
     // 최근 3개년 비교 — 데이터가 없는 해는 '—' 로 표시해 공백을 드러냅니다.
+    var years = s.years || {};
     var chips = [];
     for(var i = 2; i >= 0; i--){
-      var y = String(today.getFullYear() - i);
-      var v = byYear[y];
+      var y = String(parseInt(thisYear, 10) - i);
+      var v = years[y];
       chips.push('<span class="yrchip">' + y.slice(2) + '년 '
-        + (v ? '<b>' + num(v.c) + '건</b> · <b>' + won(v.a) + '</b>' : '<b>—</b>')
+        + (v ? '<b>' + num(v.count) + '건</b> · <b>' + won(v.amount) + '</b>' : '<b>—</b>')
         + '</span>');
     }
     var yearsEl = $('#w-years');
@@ -1101,7 +1088,7 @@ footer b{ color:var(--text-2); font-weight:700; }
 
     var foot = $('#w-foot');
     foot.className = 'livestat__foot';
-    foot.textContent = '대시보드 실시간 · 신청일 기준 · ' + ymd(today).replace(/-/g,'.') + ' 조회';
+    foot.textContent = '대시보드 실시간 · ' + (s.basis || '신청일 기준') + ' · ' + asOf.replace(/-/g,'.') + ' 조회';
   }
 
   function failWreath(msg){
@@ -1172,8 +1159,8 @@ footer b{ color:var(--text-2); font-weight:700; }
   fetch(WREATH_API, { cache:'no-store' })
     .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
     .then(function(j){
-      if(!j || j.success !== true || !Array.isArray(j.data)) throw new Error('bad payload');
-      renderWreath(j.data);
+      if(!j || j.success !== true) throw new Error('bad payload');
+      renderWreath(j);
     })
     .catch(function(){
       failWreath('현황을 불러오지 못했습니다. 카드를 눌러 대시보드에서 확인하세요.');
