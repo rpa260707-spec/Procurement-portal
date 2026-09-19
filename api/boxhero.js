@@ -84,15 +84,47 @@ export default async function handler(req, res) {
 
     let inCount = 0, outCount = 0, inQty = 0, outQty = 0;
 
-    const recent = rows.slice(0, 5).map((t) => ({
-      time: kstTime(t?.transaction_time),
-      type: t?.type || '',
-      typeLabel: TYPE_KO[t?.type] || String(t?.type || ''),
-      kinds: Number(t?.count_of_items) || 0,
-      qty: Number(t?.total_quantity) || 0,
-      location: t?.to_location?.name || t?.from_location?.name || '',
-      partner: t?.partner?.name || ''
+    // 오늘 것이 없으면 최근 거래라도 보여 줍니다.
+    const listSource = rows.length ? rows : all;
+
+    const head = listSource.slice(0, 5);
+
+    // 품목명은 상세에만 있습니다. 대시보드가 느렸던 건 **모든** 거래의 상세를 불렀기 때문이고,
+    // 여기서는 화면에 보여 줄 5건만 병렬로 받습니다. (1 + 5 회)
+    const details = await Promise.all(head.map(async (t) => {
+      try {
+        const d = await fetch(`${BASE}/v1/transactions/${t.id}`, {
+          headers: { Authorization: 'Bearer ' + token }
+        });
+        if (!d.ok) return null;
+        const j = await d.json();
+        return j?.item || j;
+      } catch (e) {
+        return null;
+      }
     }));
+
+    const recent = head.map((t, i) => {
+      const lines = details[i]?.items || [];
+      const first = lines[0]?.item?.name || lines[0]?.name || '';
+      const more = lines.length > 1 ? lines.length - 1 : 0;
+
+      return {
+        date: kstDate(t?.transaction_time),
+        time: kstTime(t?.transaction_time),
+        type: t?.type || '',
+        typeLabel: TYPE_KO[t?.type] || String(t?.type || ''),
+        kinds: Number(t?.count_of_items) || 0,
+        qty: Math.abs(Number(t?.total_quantity) || 0),
+        itemName: first,
+        moreCount: more,
+        user: t?.created_by?.name || '',
+        from: t?.from_location?.name || '',
+        to: t?.to_location?.name || '',
+        memo: t?.memo || '',
+        partner: t?.partner?.name || ''
+      };
+    });
 
     for (const t of rows) {
       const qty = Number(t?.total_quantity) || 0;
