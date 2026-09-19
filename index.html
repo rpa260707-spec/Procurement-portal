@@ -550,6 +550,22 @@ footer b{ color:var(--text-2); font-weight:700; }
 .livestat__foot.err{ color:var(--warn); }
 
 /* ---------------- 박스히어로 입출고 내역 ---------------- */
+/* 박스히어로 「오늘」 카드 — 총 재고 수 · 입고 · 출고 */
+.boxtoday{
+  margin-bottom:12px; padding:14px 16px; border-radius:12px;
+  background:var(--accent); color:#fff;
+}
+.boxtoday__head{ font-size:12.5px; font-weight:800; opacity:.92; margin-bottom:10px; }
+.boxtoday__head b{ font-weight:700; opacity:.75; margin-left:5px; }
+.boxtoday__grid{ display:grid; grid-template-columns:repeat(3,1fr); }
+.boxtoday__cell{
+  display:flex; flex-direction:column; gap:2px; padding-left:14px;
+  border-left:1px solid rgba(255,255,255,.3); min-width:0;
+}
+.boxtoday__cell:first-child{ padding-left:0; border-left:0; }
+.boxtoday__v{ font-size:21px; font-weight:800; line-height:1.15; font-variant-numeric:tabular-nums; }
+.boxtoday__k{ font-size:11px; font-weight:700; opacity:.82; }
+
 .txlist{ display:flex; flex-direction:column; }
 .tx{
   display:flex; gap:10px; padding:10px 2px;
@@ -923,7 +939,7 @@ footer b{ color:var(--text-2); font-weight:700; }
       <div class="chips">
         <a class="chip" href="https://flower-delivery-dashboard-nu.vercel.app">배송현황 목록</a>
         <a class="chip" href="https://flower-delivery-dashboard-nu.vercel.app">신규 등록</a>
-        <a class="chip" href="https://flower-delivery-dashboard-nu.vercel.app">경조사 지침</a>
+        <a class="chip" href="https://flower-delivery-dashboard-nu.vercel.app">지침 · 문서</a>
       </div>
 
       <!-- 화환 실시간 현황 (대시보드 API에서 집계) -->
@@ -955,7 +971,7 @@ footer b{ color:var(--text-2); font-weight:700; }
       </div>
     </article>
 
-    <!-- 5. 비거주지 근무직원 사택 임차현황  →  housing-zeta-sage.vercel.app -->
+    <!-- 5. 비거주지 근무직원 사택 임차현황  →  housing-ruddy.vercel.app -->
     <article class="card card--house reveal" style="animation-delay:.25s">
       <div class="card__head">
         <div class="card__icon">
@@ -965,7 +981,7 @@ footer b{ color:var(--text-2); font-weight:700; }
         </div>
         <div class="card__titles">
           <h2 class="card__title">
-            <a href="https://housing-zeta-sage.vercel.app/">비거주지 근무직원 사택 임차현황</a>
+            <a href="https://housing-ruddy.vercel.app/">비거주지 근무직원 사택 임차현황</a>
             <span class="arrow" aria-hidden="true">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
             </span>
@@ -975,25 +991,25 @@ footer b{ color:var(--text-2); font-weight:700; }
       </div>
 
       <div class="chips">
-        <a class="chip" href="https://housing-zeta-sage.vercel.app/">임차현황 목록</a>
-        <a class="chip" href="https://housing-zeta-sage.vercel.app/">만료 예정</a>
-        <a class="chip" href="https://housing-zeta-sage.vercel.app/">지원금 지침</a>
+        <a class="chip" href="https://housing-ruddy.vercel.app/">임차현황 목록</a>
+        <a class="chip" href="https://housing-ruddy.vercel.app/">만료 예정</a>
+        <a class="chip" href="https://housing-ruddy.vercel.app/">지원금 지침</a>
       </div>
 
       <!-- 사택 실시간 현황 (집계 전용 API · 담당자명·주소는 내려오지 않음) -->
       <div class="livestat" id="house-live">
         <div class="livestat__grid">
-          <a class="ls" href="https://housing-zeta-sage.vercel.app/">
+          <a class="ls" href="https://housing-ruddy.vercel.app/">
             <span class="ls__k">유효 임차</span>
             <span class="ls__v" id="h-active">—</span>
             <span class="ls__s" id="h-total">&nbsp;</span>
           </a>
-          <a class="ls" href="https://housing-zeta-sage.vercel.app/">
+          <a class="ls" href="https://housing-ruddy.vercel.app/">
             <span class="ls__k">3개월 내 만료</span>
             <span class="ls__v" id="h-expire">—</span>
             <span class="ls__s" id="h-nearest">&nbsp;</span>
           </a>
-          <a class="ls" href="https://housing-zeta-sage.vercel.app/">
+          <a class="ls" href="https://housing-ruddy.vercel.app/">
             <span class="ls__k">월세 합계</span>
             <span class="ls__v" id="h-rent">—</span>
             <span class="ls__s" id="h-deposit">&nbsp;</span>
@@ -1005,7 +1021,7 @@ footer b{ color:var(--text-2); font-weight:700; }
 
       <div class="card__meta">
         <span class="live">운영중</span>
-        <span class="host">housing-zeta-sage.vercel.app</span>
+        <span class="host">housing-ruddy.vercel.app</span>
       </div>
     </article>
 
@@ -1083,10 +1099,23 @@ footer b{ color:var(--text-2); font-weight:700; }
 
       <!-- 오늘 입출고 내역 (포털 서버 함수가 한 번만 조회) -->
       <div class="livestat" id="box-live">
+        <!-- 박스히어로 앱의 「오늘」 카드와 같은 배치 -->
         <div class="boxtoday hidden" id="b-today">
-          <span class="boxtoday__k">오늘 <b id="b-date">—</b></span>
-          <span class="boxtoday__v"><span id="b-in">—</span><em>입고</em></span>
-          <span class="boxtoday__v"><span id="b-out">—</span><em>출고</em></span>
+          <div class="boxtoday__head">오늘 <b id="b-date"></b></div>
+          <div class="boxtoday__grid">
+            <div class="boxtoday__cell">
+              <span class="boxtoday__v" id="b-stock">—</span>
+              <span class="boxtoday__k">총 재고 수</span>
+            </div>
+            <div class="boxtoday__cell">
+              <span class="boxtoday__v" id="b-in">—</span>
+              <span class="boxtoday__k">입고</span>
+            </div>
+            <div class="boxtoday__cell">
+              <span class="boxtoday__v" id="b-out">—</span>
+              <span class="boxtoday__k">출고</span>
+            </div>
+          </div>
         </div>
         <div class="txlist" id="b-list"></div>
         <div class="livestat__foot" id="b-foot">현황 불러오는 중…</div>
@@ -1385,7 +1414,7 @@ footer b{ color:var(--text-2); font-weight:700; }
   /* ---------------- 2-0. 사택 임차현황 ----------------
      화환과 같은 집계 전용 엔드포인트입니다.
      담당자명 · 주소지 · 임대인 계좌는 내려오지 않고 건수와 금액만 옵니다. */
-  var HOUSE_API = 'https://housing-zeta-sage.vercel.app/api/summary';
+  var HOUSE_API = 'https://housing-ruddy.vercel.app/api/summary';
 
   function renderHouse(s){
     var asOf = String(s.asOf || ymd(new Date()));
@@ -1437,6 +1466,7 @@ footer b{ color:var(--text-2); font-weight:700; }
     $('#b-today').classList.remove('hidden');
     var asOf = String(s.asOf || '');
     $('#b-date').textContent = asOf ? (parseInt(asOf.slice(5,7),10) + '월 ' + parseInt(asOf.slice(8,10),10) + '일') : '';
+    $('#b-stock').textContent = (s.totalStock == null) ? '—' : num(s.totalStock);
     $('#b-in').textContent  = num(s.inCount || 0);
     $('#b-out').textContent = num(s.outCount || 0);
 
@@ -1512,14 +1542,23 @@ footer b{ color:var(--text-2); font-weight:700; }
         var head  = (rows.length ? rows : all).slice(0, 5);
 
         // 품목명은 상세에만 있습니다. 화면에 띄울 5건만 받습니다.
+        // 총 재고 수 — 창고 목록 한 번이면 됩니다(창고마다 quantity 가 있음)
+        var stockP = fetch(BOX_REST + '/v1/locations?limit=100', { headers:h })
+          .then(function(r){ return r.ok ? r.json() : null; })
+          .then(function(lj){
+            var locs = (lj && lj.items) || [];
+            return locs.length ? locs.reduce(function(s,l){ return s + (Number(l.quantity)||0); }, 0) : null;
+          })
+          .catch(function(){ return null; });
+
         return Promise.all(head.map(function(t){
           return fetch(BOX_REST + '/v1/transactions/' + t.id, { headers:h })
             .then(function(r){ return r.ok ? r.json() : null; })
             .then(function(d){ return d && (d.item || d); })
             .catch(function(){ return null; });
         })).then(function(details){
+          return stockP.then(function(totalStock){
           var inC = 0, outC = 0;
-
           rows.forEach(function(t){ if(t.type === "in") inC++; else if(t.type === "out") outC++; });
 
 
@@ -1527,6 +1566,7 @@ footer b{ color:var(--text-2); font-weight:700; }
             success: true,
             asOf: today,
             total: rows.length,
+            totalStock: totalStock,
             inCount: inC,
             outCount: outC,
             lastDate: all.length ? kstParts(all[0].transaction_time).date : '',
@@ -1549,6 +1589,7 @@ footer b{ color:var(--text-2); font-weight:700; }
               };
             })
           };
+          });
         });
       });
   }

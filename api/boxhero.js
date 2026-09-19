@@ -83,6 +83,20 @@ export default async function handler(req, res) {
     const json = await r.json();
     const all = Array.isArray(json?.items) ? json.items : [];
 
+    // 총 재고 수 — /v1/items 를 전부 받으면 수십 번 호출해야 해서 느립니다.
+    // 창고 목록은 한 번이면 되고 창고마다 quantity 가 들어 있어 그걸 더합니다.
+    let totalStock = null;
+    try {
+      const lr = await fetch(`${BASE}/v1/locations?limit=100`, {
+        headers: { Authorization: 'Bearer ' + token }
+      });
+      if (lr.ok) {
+        const lj = await lr.json();
+        const locs = Array.isArray(lj?.items) ? lj.items : [];
+        totalStock = locs.reduce((s, l) => s + (Number(l?.quantity) || 0), 0);
+      }
+    } catch (e) { /* 실패하면 재고 수만 비워 둡니다 */ }
+
     const today = kstToday();
     const rows = all.filter((t) => kstDate(t?.transaction_time) === today);
 
@@ -146,6 +160,7 @@ export default async function handler(req, res) {
       success: true,
       asOf: today,
       total: rows.length,
+      totalStock,
       inCount, outCount, inQty, outQty,
       recent,
       lastDate,
