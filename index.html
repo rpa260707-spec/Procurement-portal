@@ -435,6 +435,20 @@ footer b{ color:var(--text-2); font-weight:700; }
 }
 
 /* ---------------- 포털 검색 ---------------- */
+/* 히어로: 검색창 + 시세 위젯 한 줄 배치 */
+.hero-row{
+  margin-top:22px;
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+}
+.hero-row .portal-search{ margin-top:0; flex:1 1 380px; max-width:560px; }
+.hero-row .market{ flex:0 0 auto; margin-left:auto; }
+@media (max-width:860px){
+  .hero-row{ align-items:stretch; }
+  .hero-row .portal-search{ flex:1 1 100%; max-width:none; }
+  .hero-row .market{ margin-left:0; width:100%; }
+  .hero-row .mkt{ flex:1 1 108px; min-width:0; }
+}
+
 .portal-search{
   position:relative; display:flex; align-items:center; gap:10px;
   margin-top:22px; max-width:560px;
@@ -601,10 +615,30 @@ footer b{ color:var(--text-2); font-weight:700; }
        전략구매팀이 매일 사용하는 4개의 시스템을 한 화면에 모았습니다.
        카드를 누르면 해당 시스템으로 바로 이동합니다.</p>
 
-    <div class="portal-search">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
-      <input type="search" id="psearch" placeholder="시스템 · 바로가기 검색 (예: 입찰, 화환, 단가, 나라장터)" aria-label="포털 검색" autocomplete="off" />
-      <button type="button" id="psearch-clear" class="hidden" aria-label="검색어 지우기">✕</button>
+    <div class="hero-row">
+      <div class="portal-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+        <input type="search" id="psearch" placeholder="시스템 · 바로가기 검색 (예: 입찰, 화환, 단가, 나라장터)" aria-label="포털 검색" autocomplete="off" />
+        <button type="button" id="psearch-clear" class="hidden" aria-label="검색어 지우기">✕</button>
+      </div>
+
+      <div class="market" id="market">
+        <div class="mkt" data-k="usdkrw">
+          <span class="mkt__k">원 / 달러</span>
+          <span class="mkt__v">—</span>
+          <span class="mkt__c">&nbsp;</span>
+        </div>
+        <div class="mkt" data-k="jpykrw">
+          <span class="mkt__k">원 / 100엔</span>
+          <span class="mkt__v">—</span>
+          <span class="mkt__c">&nbsp;</span>
+        </div>
+        <div class="mkt" data-k="brent">
+          <span class="mkt__k">브렌트유</span>
+          <span class="mkt__v">—</span>
+          <span class="mkt__c">&nbsp;</span>
+        </div>
+      </div>
     </div>
     <p class="portal-search__hint hidden" id="psearch-hint"></p>
   </section>
@@ -755,10 +789,22 @@ footer b{ color:var(--text-2); font-weight:700; }
         </div>
       </div>
 
-      <div class="chips">
-        <a class="chip" href="https://price-sand.vercel.app/">품명 검색</a>
-        <a class="chip" href="https://price-sand.vercel.app/">품목 등록(CSV)</a>
-        <a class="chip" href="https://price-sand.vercel.app/">수정 이력</a>
+      <form class="searchbar" action="https://price-sand.vercel.app/" method="get" target="_blank" rel="noopener">
+        <input type="search" name="q" placeholder="품목코드 · 품명 · 제조사로 검색" aria-label="소모품 검색어" autocomplete="off" />
+        <button type="submit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+          검색
+        </button>
+      </form>
+
+      <div class="livestat" id="supply-live">
+        <div class="livestat__grid" style="grid-template-columns:1fr">
+          <a class="ls" href="https://price-sand.vercel.app/">
+            <span class="ls__k">등록 품목</span>
+            <span class="ls__v" id="s-count">—</span>
+            <span class="ls__s" id="s-note">가격검색에서 확인</span>
+          </a>
+        </div>
       </div>
 
       <div class="card__meta">
@@ -777,28 +823,9 @@ footer b{ color:var(--text-2); font-weight:700; }
          [대외]  공개 사이트 주소라 그대로 동작합니다.
                  쓰지 않는 사이트는 <a> 블록째 삭제하면 됩니다.
        ============================================================ -->
-  <div class="section-h section-h--market">
-    <div class="section-h__t">
-      <h2>구매 · 계약 업무 바로가기</h2>
-      <span>업무에 필요한 사내 · 대외 시스템 모음 · 모두 새 창으로 열립니다</span>
-    </div>
-    <div class="market" id="market">
-      <div class="mkt" data-k="usdkrw">
-        <span class="mkt__k">원 / 달러</span>
-        <span class="mkt__v">—</span>
-        <span class="mkt__c">&nbsp;</span>
-      </div>
-      <div class="mkt" data-k="jpykrw">
-        <span class="mkt__k">원 / 100엔</span>
-        <span class="mkt__v">—</span>
-        <span class="mkt__c">&nbsp;</span>
-      </div>
-      <div class="mkt" data-k="brent">
-        <span class="mkt__k">브렌트유</span>
-        <span class="mkt__v">—</span>
-        <span class="mkt__c">&nbsp;</span>
-      </div>
-    </div>
+  <div class="section-h">
+    <h2>구매 · 계약 업무 바로가기</h2>
+    <span>업무에 필요한 사내 · 대외 시스템 모음 · 모두 새 창으로 열립니다</span>
   </div>
 
   <!-- 사내 시스템 -->
@@ -1145,6 +1172,22 @@ footer b{ color:var(--text-2); font-weight:700; }
     if(old) old.remove();
     mk.appendChild(note);
   }
+
+  /* ---------------- 4. 소모품 등록 품목 수 ----------------
+     price-sand 에 집계 API 가 생기면 아래 주소만 살아나면 숫자가 채워집니다.
+     (현재는 엔드포인트가 없어 '—' 로 표시됩니다) */
+  fetch('https://price-sand.vercel.app/api/summary', { cache:'no-store' })
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(j){
+      var n = j && (j.count != null ? j.count : (j.total != null ? j.total : null));
+      if(n == null) throw new Error('no count');
+      $('#s-count').innerHTML = num(n) + '<span class="unit">종</span>';
+      $('#s-note').textContent = j.updatedAt ? ('갱신 ' + String(j.updatedAt).slice(5)) : '가격검색 실시간';
+    })
+    .catch(function(){
+      $('#s-count').textContent = '—';
+      $('#s-note').textContent = '가격검색에서 확인';
+    });
 
   fetch('/api/market', { cache:'no-store' })
     .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
