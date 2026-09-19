@@ -566,6 +566,15 @@ footer b{ color:var(--text-2); font-weight:700; }
 .boxtoday__v{ font-size:21px; font-weight:800; line-height:1.15; font-variant-numeric:tabular-nums; }
 .boxtoday__k{ font-size:11px; font-weight:700; opacity:.82; }
 
+.txfilter{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
+.txchip{
+  padding:4px 11px; border-radius:999px; cursor:pointer;
+  border:1px solid var(--border); background:var(--surface);
+  font:inherit; font-size:11.5px; font-weight:700; color:var(--text-3);
+}
+.txchip:hover{ border-color:var(--accent); color:var(--accent); }
+.txchip.on{ background:var(--accent); border-color:var(--accent); color:#fff; }
+
 .txlist{ display:flex; flex-direction:column; }
 .tx{
   display:flex; gap:10px; padding:10px 2px;
@@ -1057,13 +1066,31 @@ footer b{ color:var(--text-2); font-weight:700; }
       <div class="sresults hidden" id="s-results"></div>
 
       <div class="livestat" id="supply-live">
-        <div class="livestat__grid" style="grid-template-columns:1fr">
+        <div class="livestat__grid">
           <a class="ls" href="https://price-sand.vercel.app/">
             <span class="ls__k">등록 품목</span>
             <span class="ls__v" id="s-count">—</span>
             <span class="ls__s" id="s-note">가격검색에서 확인</span>
           </a>
+          <a class="ls" href="https://price-sand.vercel.app/">
+            <span class="ls__k">26년 단가 보유</span>
+            <span class="ls__v" id="s-y26">—</span>
+            <span class="ls__s">올해 발주 실적</span>
+          </a>
+          <a class="ls" href="https://price-sand.vercel.app/">
+            <span class="ls__k">누적 발주액</span>
+            <span class="ls__v" id="s-amt">—</span>
+            <span class="ls__s">전체 이력 기준</span>
+          </a>
         </div>
+
+        <div class="txfilter" id="s-filter">
+          <button type="button" class="txchip on" data-list="frequent">자주 사는 품목</button>
+          <button type="button" class="txchip" data-list="biggest">금액 큰 품목</button>
+          <button type="button" class="txchip" data-list="recent">최근 발주</button>
+        </div>
+        <div class="txlist" id="s-list"></div>
+        <div class="livestat__foot" id="s-foot">현황 불러오는 중…</div>
       </div>
 
       <div class="card__meta">
@@ -1116,6 +1143,13 @@ footer b{ color:var(--text-2); font-weight:700; }
               <span class="boxtoday__k">출고</span>
             </div>
           </div>
+        </div>
+        <div class="txfilter" id="b-filter">
+          <button type="button" class="txchip on" data-type="">전체</button>
+          <button type="button" class="txchip" data-type="in">입고</button>
+          <button type="button" class="txchip" data-type="out">출고</button>
+          <button type="button" class="txchip" data-type="move">이동</button>
+          <button type="button" class="txchip" data-type="adjust">조정</button>
         </div>
         <div class="txlist" id="b-list"></div>
         <div class="livestat__foot" id="b-foot">현황 불러오는 중…</div>
@@ -1544,7 +1578,7 @@ footer b{ color:var(--text-2); font-weight:700; }
   function loadBoxDirect(token){
     var h = { Authorization: 'Bearer ' + token };
 
-    return boxGet('v1/transactions?limit=100', token)
+    return boxGet('v1/transactions?limit=100' + (boxType ? '&type=' + boxType : ''), token)
       .then(function(r){
         if(r.status === 401) throw new Error('토큰이 올바르지 않습니다. 다시 넣어 주세요.');
         if(!r.ok) throw new Error('박스히어로 API ' + r.status);
@@ -1638,6 +1672,17 @@ footer b{ color:var(--text-2); font-weight:700; }
     foot.appendChild(b);
   }
 
+  var boxType = '';   // '' | in | out | move | adjust
+
+  $$('#b-filter .txchip').forEach(function(b){
+    b.addEventListener('click', function(){
+      if(b.classList.contains('on')) return;
+      $$('#b-filter .txchip').forEach(function(x){ x.classList.toggle('on', x === b); });
+      boxType = b.dataset.type || '';
+      startBox();
+    });
+  });
+
   function startBox(){
     $('#b-foot').className = 'livestat__foot';
     $('#b-foot').textContent = '현황 불러오는 중…';
@@ -1660,7 +1705,7 @@ footer b{ color:var(--text-2); font-weight:700; }
         .catch(viaBrowserToken);
     }
 
-    fetch('/api/boxhero', { cache:'no-store' })
+    fetch('/api/boxhero' + (boxType ? '?type=' + boxType : ''), { cache:'no-store' })
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(s){
         if(s && s.success === true){ renderBox(s); return; }
@@ -1786,11 +1831,51 @@ footer b{ color:var(--text-2); font-weight:700; }
       if(!j || j.success !== true || j.ordered == null) throw new Error('no count');
       $('#s-count').innerHTML = num(j.ordered) + '<span class="unit">종</span>';
       $('#s-note').textContent = '발주 이력 품목 · 단가 보유 ' + num(j.codes) + '종';
+      $('#s-y26').innerHTML = num(j.y2026 || 0) + '<span class="unit">종</span>';
+      $('#s-amt').textContent = won(j.totalAmount || 0);
+
+      supplyLists = { frequent:j.frequent||[], biggest:j.biggest||[], recent:j.recent||[] };
+      renderSupplyList('frequent');
+
+      var foot = $('#s-foot');
+      foot.className = 'livestat__foot';
+      foot.textContent = '가격검색 실시간 · 발주 이력 기준';
     })
     .catch(function(){
       $('#s-count').textContent = '—';
       $('#s-note').textContent = '가격검색에서 확인';
+      var foot = $('#s-foot');
+      foot.className = 'livestat__foot err';
+      foot.textContent = '품목 현황을 불러오지 못했습니다.';
     });
+
+  /* 자주 사는 품목 · 금액 큰 품목 · 최근 발주 — 칩으로 골라 봅니다. */
+  var supplyLists = { frequent:[], biggest:[], recent:[] };
+
+  function renderSupplyList(kind){
+    var rows = supplyLists[kind] || [];
+    var list = $('#s-list');
+
+    list.innerHTML = rows.length
+      ? rows.map(function(r){
+          var sub = kind === 'biggest' ? (won(r.amount) + ' · ' + num(r.count) + '회')
+                  : kind === 'recent'  ? (String(r.last).slice(5).replace('-','.') + ' 발주 · ' + won(r.unitPrice))
+                  :                      (num(r.count) + '회 · ' + won(r.amount));
+          return '<a class="tx" href="https://price-sand.vercel.app/?q=' + encodeURIComponent(r.code) + '" target="_blank" rel="noopener">'
+            + '<span class="tx__body">'
+            +   '<span class="tx__item">' + esc(r.name) + '</span>'
+            +   '<span class="tx__loc">' + esc(r.code) + ' · ' + sub + '</span>'
+            + '</span></a>';
+        }).join('')
+      : '<div class="tx tx--empty">표시할 품목이 없습니다</div>';
+  }
+
+  $$('#s-filter .txchip').forEach(function(b){
+    b.addEventListener('click', function(){
+      $$('#s-filter .txchip').forEach(function(x){ x.classList.toggle('on', x === b); });
+      renderSupplyList(b.dataset.list);
+    });
+  });
 
   /* ---------------- 5. 소모품 검색 결과 미리보기 ----------------
      price-sand 의 /api/search?q= 를 호출합니다.

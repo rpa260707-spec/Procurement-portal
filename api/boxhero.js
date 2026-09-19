@@ -98,12 +98,17 @@ export default async function handler(req, res) {
     } catch (e) { /* 실패하면 재고 수만 비워 둡니다 */ }
 
     const today = kstToday();
-    const rows = all.filter((t) => kstDate(t?.transaction_time) === today);
+
+    // 카드에서 고른 유형(입고/출고/이동/조정)만 추립니다. 없으면 전체.
+    const want = String(req.query.type || '').trim();
+    const byType = want ? all.filter((t) => t?.type === want) : all;
+
+    const rows = byType.filter((t) => kstDate(t?.transaction_time) === today);
 
     let inCount = 0, outCount = 0, inQty = 0, outQty = 0;
 
     // 오늘 것이 없으면 최근 거래라도 보여 줍니다.
-    const listSource = rows.length ? rows : all;
+    const listSource = rows.length ? rows : byType;
 
     const head = listSource.slice(0, 5);
 
@@ -147,14 +152,15 @@ export default async function handler(req, res) {
       };
     });
 
-    for (const t of rows) {
+    // 위쪽 요약(오늘 입고/출고)은 유형 필터와 상관없이 항상 오늘 전체를 셉니다.
+    for (const t of all.filter((x) => kstDate(x?.transaction_time) === today)) {
       const qty = Number(t?.total_quantity) || 0;
       if (t?.type === 'in') { inCount += 1; inQty += Math.abs(qty); }
       else if (t?.type === 'out') { outCount += 1; outQty += Math.abs(qty); }
     }
 
     // 오늘 거래가 없으면 마지막 거래가 언제였는지만 알려 줍니다.
-    const lastDate = all.length ? kstDate(all[0]?.transaction_time) : '';
+    const lastDate = byType.length ? kstDate(byType[0]?.transaction_time) : '';
 
     return res.status(200).json({
       success: true,
