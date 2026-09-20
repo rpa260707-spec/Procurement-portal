@@ -1126,10 +1126,10 @@ footer b{ color:var(--text-2); font-weight:700; }
         </div>
 
         <div class="txfilter" id="s-filter">
-          <button type="button" class="txchip on" data-list="expensive">단가 높은 품목</button>
+          <button type="button" class="txchip on" data-list="recent">최근 발주</button>
           <button type="button" class="txchip" data-list="frequent">자주 사는 품목</button>
           <button type="button" class="txchip" data-list="biggest">금액 큰 품목</button>
-          <button type="button" class="txchip" data-list="recent">최근 발주</button>
+          <button type="button" class="txchip" data-list="expensive">단가 높은 품목</button>
         </div>
         <div class="txlist" id="s-list"></div>
         <div class="livestat__foot" id="s-foot">현황 불러오는 중…</div>
@@ -1525,12 +1525,16 @@ footer b{ color:var(--text-2); font-weight:700; }
     $('#h-rent').textContent = won(s.totalRent);
     $('#h-deposit').textContent = '보증금 ' + won(s.totalDeposit);
 
-    // 지역별 건수 — 서울 / 청주 / 그 밖의 지역
+    /* 권역별 건수 — 「비거주지 근무직원에 대한 지원금 운영요령」 〈별표1〉 기준
+       (서울·수도권 / 청주 / 대전 / 대구 / 부산 / 전주 / 광주).
+       API 가 이미 별표 순서대로 보내 주므로 그 순서를 그대로 씁니다.
+       0건인 권역은 빼야 칩이 줄줄이 늘어지지 않습니다. */
     var regions = s.regions || {};
-    var order = ['서울', '청주', '그 밖의 지역'];
-    var chips = order.map(function(k){
-      return '<span class="yrchip">' + k + ' <b>' + num(regions[k]) + '건</b></span>';
-    });
+    var chips = Object.keys(regions)
+      .filter(function(k){ return (regions[k] || 0) > 0; })
+      .map(function(k){
+        return '<span class="yrchip">' + k + ' <b>' + num(regions[k]) + '건</b></span>';
+      });
     var regionsEl = $('#h-regions');
     regionsEl.innerHTML = chips.join('');
     regionsEl.classList.remove('hidden');
@@ -1901,7 +1905,7 @@ footer b{ color:var(--text-2); font-weight:700; }
         expensive:j.expensive||[], frequent:j.frequent||[],
         biggest:j.biggest||[], recent:j.recent||[]
       };
-      renderSupplyList('expensive');
+      renderSupplyList('recent');   // 기본은 「최근 발주」 — 가장 먼저 궁금한 것이 최근 건입니다.
 
       var foot = $('#s-foot');
       foot.className = 'livestat__foot';
@@ -1915,7 +1919,9 @@ footer b{ color:var(--text-2); font-weight:700; }
       foot.textContent = '품목 현황을 불러오지 못했습니다.';
     });
 
-  /* 자주 사는 품목 · 금액 큰 품목 · 최근 발주 — 칩으로 골라 봅니다. */
+  /* 최근 발주(기본) · 자주 사는 품목 · 금액 큰 품목 · 단가 높은 품목 — 칩으로 골라 봅니다.
+     「단가 높은 품목」은 단가만 보여 줍니다. 몇 번 샀는지는 그 줄에서 볼 이유가 없고,
+     한 번 산 비싼 물건이 「1회 발주」로 붙으면 오히려 싸 보입니다. */
   var supplyLists = { expensive:[], frequent:[], biggest:[], recent:[] };
 
   function renderSupplyList(kind){
@@ -1924,7 +1930,7 @@ footer b{ color:var(--text-2); font-weight:700; }
 
     list.innerHTML = rows.length
       ? rows.map(function(r){
-          var sub = kind === 'expensive' ? (won(r.unitPrice) + ' · ' + num(r.count) + '회 발주')
+          var sub = kind === 'expensive' ? won(r.unitPrice)
                   : kind === 'biggest'   ? (won(r.amount) + ' 누적 · ' + num(r.count) + '회')
                   : kind === 'recent'    ? (String(r.last).slice(5).replace('-','.') + ' 발주 · ' + won(r.unitPrice))
                   :                        (num(r.count) + '회 · 단가 ' + won(r.unitPrice));
