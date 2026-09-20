@@ -758,6 +758,36 @@ footer b{ color:var(--text-2); font-weight:700; }
   .livestat__grid{ grid-template-columns:1fr 1fr; }
   .livestat__grid .ls:last-child{ grid-column:1/-1; }
 }
+
+/* ────────────── 폰 화면 가독성 (2026-09-20) ──────────────
+   아이폰(약 390px)에서 확인한 것들을 잡습니다.
+   1) 로고가 가로로 길어 「전략구매팀 업무포털」 뒤가 테마 버튼에 잘렸습니다.
+   2) 소개 문단 글씨가 커서 여섯 줄을 먹었습니다.
+   3) 검색창 안내문이 길어 잘렸습니다 — 문구는 아래 스크립트에서 짧은 걸로 바꿉니다.
+   4) 시세 타일이 커서 화면을 다 차지했습니다.
+   입력칸 글씨는 16px 밑으로 내리지 않습니다. iOS 가 포커스 때 화면을 확대해 버립니다. */
+@media (max-width:560px){
+  .top__in{ height:58px; gap:10px; }
+  /* 로고 가로폭을 묶어 제목 자리를 냅니다. */
+  .brand{ gap:9px; }
+  .brand__logo{ height:24px; max-width:118px; object-fit:contain; object-position:left center; }
+  .brand__txt{ flex:1 1 auto; }
+  .brand__org{ font-size:13.5px; white-space:normal; word-break:keep-all; line-height:1.2; }
+  .brand__sub{ font-size:10px; }
+
+  .hero h1{ margin-top:14px; font-size:clamp(23px,7vw,30px); }
+  .hero p{
+    margin-top:10px; font-size:13.5px; line-height:1.6;
+    word-break:keep-all;      /* 한글이 단어 중간에서 끊기지 않게 */
+  }
+
+  .market{ gap:7px; }
+  .mkt{ padding:7px 10px; flex:1 1 calc(50% - 4px); }
+  .mkt__k{ font-size:9.5px; }
+  .mkt__v{ font-size:15px; }
+  .mkt__c{ font-size:10px; }
+  .market__note{ font-size:10px; }
+}
 </style>
 </head>
 <body>
@@ -838,11 +868,6 @@ footer b{ color:var(--text-2); font-weight:700; }
         </div>
         <div class="mkt" data-k="wti">
           <span class="mkt__k">WTI (서부텍사스)</span>
-          <span class="mkt__v">—</span>
-          <span class="mkt__c">&nbsp;</span>
-        </div>
-        <div class="mkt" data-k="gold">
-          <span class="mkt__k">금 (온스)</span>
           <span class="mkt__v">—</span>
           <span class="mkt__c">&nbsp;</span>
         </div>
@@ -1366,6 +1391,17 @@ footer b{ color:var(--text-2); font-weight:700; }
   var clearBtn = $('#psearch-clear');
   var hint = $('#psearch-hint');
 
+  /* 폰에서는 안내문이 길어 잘립니다. 화면 폭에 맞춰 짧은 걸로 바꿉니다. */
+  (function fitPlaceholder(){
+    var wide = '시스템 · 바로가기 검색 (예: 입찰, 화환, 사택, 단가, 재고, 나라장터)';
+    var narrow = '검색 (예: 입찰, 화환, 사택)';
+    function apply(){
+      input.placeholder = window.innerWidth <= 560 ? narrow : wide;
+    }
+    apply();
+    window.addEventListener('resize', apply);
+  })();
+
   function runSearch(){
     var q = input.value.trim().toLowerCase();
     clearBtn.classList.toggle('hidden', !q);
@@ -1501,7 +1537,7 @@ footer b{ color:var(--text-2); font-weight:700; }
 
     var foot = $('#h-foot');
     foot.className = 'livestat__foot';
-    foot.textContent = '대시보드 실시간 · ' + (s.basis || '계약종료일 기준') + ' · ' + asOf.replace(/-/g,'.') + ' 조회';
+    foot.textContent = '대시보드 실시간 · ' + (s.basis || '예상종료일 기준') + ' · ' + asOf.replace(/-/g,'.') + ' 조회';
   }
 
   function failHouse(msg){
@@ -1802,7 +1838,6 @@ footer b{ color:var(--text-2); font-weight:700; }
     cnykrw: { scale: 1,   fmt: function(v){ return v.toLocaleString('ko-KR',{minimumFractionDigits:2,maximumFractionDigits:2}); }, suffix:'원' },
     brent:  { scale: 1,   fmt: function(v){ return '$' + v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }, suffix:'' },
     wti:    { scale: 1,   fmt: function(v){ return '$' + v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }, suffix:'' },
-    gold:   { scale: 1,   fmt: function(v){ return '$' + v.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0}); }, suffix:'' },
     copper: { scale: 1,   fmt: function(v){ return '$' + v.toLocaleString('en-US',{minimumFractionDigits:3,maximumFractionDigits:3}); }, suffix:'' }
   };
 
