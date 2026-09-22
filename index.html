@@ -1800,9 +1800,16 @@ footer b{ color:var(--text-2); font-weight:700; }
 
   /* ---------------- 2-1. 입찰구매 현황 (씨마켓 요약) ----------------
      씨마켓 바이어 대시보드는 로그인 뒤에 있는 데이터라 포털에서 직접 못 읽습니다.
-     그래서 data/bid.json 의 값을 읽어 표시합니다. 수치가 바뀌면 그 파일만 고치면 됩니다. */
-  fetch('data/bid.json', { cache:'no-store' })
-    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+     그래서 사람이 넣은 값을 씁니다. 순서는 이렇습니다.
+       1. /api/bid  — Blob 에 저장된 값 (씨마켓 북마클릿으로 갱신 · 배포 불필요)
+       2. data/bid.json — 정적 파일 (예전 방식, 고치면 배포해야 함) */
+  fetch('/api/bid', { cache:'no-store' })
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(j){
+      if(j && j.success && j.kpi) return j;                   // Blob 값이 있으면 그걸로
+      return fetch('data/bid.json', { cache:'no-store' })     // 없으면 정적 파일
+        .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); });
+    })
     .then(function(b){
       var k = b.kpi || {};
       var items = [
