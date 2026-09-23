@@ -3,19 +3,19 @@
   "period": "26.09.01 ~ 26.09.30",
   "source": "씨마켓플레이스 · 나의 거래 요약",
   "kpi": {
-    "inProgress": 20,
-    "closed": 235,
-    "contracts": 199,
+    "inProgress": 24,
+    "closed": 247,
+    "contracts": 204,
     "cardPending": 0,
-    "invoices": 85
+    "invoices": 91
   },
   "failed": {
-    "total": 26,
+    "total": 31,
     "reasons": [
-      { "label": "입찰금액이 구매목표가보다 높음", "count": 14 },
+      { "label": "입찰금액이 구매목표가보다 높음", "count": 18 },
       { "label": "사용부서와 협의결과 조건 불일치", "count": 5 },
       { "label": "사유 미지정", "count": 3 },
-      { "label": "기타", "count": 2 },
+      { "label": "기타", "count": 3 },
       { "label": "응찰업체 없음", "count": 2 }
     ]
   }
