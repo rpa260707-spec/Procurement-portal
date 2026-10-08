@@ -1886,7 +1886,7 @@ footer b{ color:var(--text-2); font-weight:700; }
   var BM_TABS = [
     { key:'notSent', label:'입찰 누락',    hint:'품의만 올리고 입찰 전송 안 함' },
     { key:'stalled', label:'마감 후 정체', hint:'마감일이 지났는데 상태가 진행중' },
-    { key:'failed',  label:'유찰 미처리', hint:'유찰인데 재공고도 취소도 안 함' }
+    { key:'failed',  label:'유찰',        hint:'유찰된 건 — 최근 마감일부터' }
   ];
   var bmData = null, bmPick = 'notSent';
 
@@ -1913,7 +1913,7 @@ footer b{ color:var(--text-2); font-weight:700; }
       + '</div>'
       + bmListHtml()
       + '<p class="bidmon__note">' + esc(BM_TABS.filter(function(t){ return t.key === bmPick; })[0].hint)
-      + ' · 최근 14일 이내만 · 10일 이상 적색, 7일 이상 주황</p>';
+      + ' · 최근 마감일 순 · 10일 이상 적색, 7일 이상 주황</p>';
 
     $$('#bidmon .bmtab').forEach(function(b){
       b.addEventListener('click', function(){ bmPick = b.dataset.bm; bmRender(); });
@@ -1921,7 +1921,9 @@ footer b{ color:var(--text-2); font-weight:700; }
   }
 
   function bmListHtml(){
-    var rows = bmRows(bmPick);
+    /* 최근 마감일이 위로 오게 — 경과일이 작을수록 최근입니다.
+       (서버는 오래된 순으로 주지만 화면에서는 최신순으로 다시 정렬합니다.) */
+    var rows = bmRows(bmPick).slice().sort(function(a,b){ return (a.days||0) - (b.days||0); });
     if(!rows.length) return '<p class="bidmon__note">해당하는 건이 없습니다.</p>';
     return '<div class="bidmon__list"><table><thead><tr>'
       + '<th>경과</th><th>구매번호</th><th>품명</th><th>수요부서</th><th>담당자</th><th>마감</th><th>단계</th>'

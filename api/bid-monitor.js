@@ -57,6 +57,9 @@ const FILE_NAME = 'portal-bid-monitor.json';
 const KEYS = ['notSent', 'stalled', 'failed'];
 const MAX_ROWS = 300;   // 탭당 상한. 통째로 넘어와도 응답이 비대해지지 않게 자릅니다.
 const MAX_DAYS = 14;    // 경과 14일 초과는 담지 않습니다 — 따로 사유가 있는 건이라 보고 제외합니다.
+/* 단, 「유찰」은 기간을 안 자릅니다. 지난 유찰까지 한눈에 봐야 해서입니다.
+   입찰 누락·마감 후 정체만 14일 컷을 겁니다. */
+const NO_CUT = new Set(['failed']);
 
 function setHeaders(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -137,8 +140,8 @@ export default async function handler(req, res) {
       for (const k of KEYS) {
         const rows = (Array.isArray(b[k]) ? b[k] : [])
           .map(cleanRow)
-          .filter((r) => (r.prNo || r.item) && r.days <= MAX_DAYS)
-          .sort((x, y) => y.days - x.days)      // 오래 묵은 건이 위로
+          .filter((r) => (r.prNo || r.item) && (NO_CUT.has(k) || r.days <= MAX_DAYS))
+          .sort((x, y) => x.days - y.days)      // 최근 마감일이 위로
           .slice(0, MAX_ROWS);
         payload[k] = rows;
         payload.counts[k] = rows.length;
