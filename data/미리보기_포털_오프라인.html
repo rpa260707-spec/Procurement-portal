@@ -820,6 +820,54 @@ footer b{ color:var(--text-2); font-weight:700; }
 </style>
 </head>
 <body>
+<!-- ── 오프라인 미리보기용 ──────────────────────────────────────────
+     이 파일은 서버 없이 더블클릭으로 열어 보라고 만든 사본입니다.
+     · 시세·씨마켓·소모품·재고·화환·사택 = 라이브 API 를 그대로 부릅니다 (실제 값)
+     · 누락 모니터링 = 아직 배포 전이라 아래 예시 데이터를 대신 돌려줍니다
+     배포용 파일은 index.html 입니다. 이 사본은 배포하지 마세요.
+──────────────────────────────────────────────────────────────── -->
+<script>
+(function () {
+  var DEMO = {
+    success: true, from: 'demo',
+    asOf: '2026-09-29', scope: '입찰-소모품', totalRows: 1856,
+    counts: { notSent: 2, stalled: 4, failed: 3 },
+    notSent: [
+      { days: 12, prNo: 'CS2026091700021', item: 'Whatman 여과지 GF/C 47mm 외 2건', dept: '수질환경팀', emp: '김정아', endDt: '2026-09-17 17:00', step: '품의완료' },
+      { days: 8,  prNo: 'CS2026092100004', item: '표준시약 Cd 1000ppm', dept: '분석화학평가팀', emp: '최정환', endDt: '2026-09-21 16:00', step: '품의완료' }
+    ],
+    stalled: [
+      { days: 11, prNo: 'CS2026091800007', item: '가스검지관 4LT / 황화수소 / 0.05~4.0 ppm 외 1건', dept: '생활안전보건팀', emp: '정승표', endDt: '2026-09-18 13:00', step: '입찰진행(전송)' },
+      { days: 9,  prNo: 'CS2026092000012', item: 'FILAMENT (811479471) For Dioxins Analysis', dept: '화학·바이오분석팀', emp: '서병수', endDt: '2026-09-20 16:00', step: '입찰진행(전송)' },
+      { days: 4,  prNo: 'CS2026092200013', item: 'Centre Tube 2.0 (ICP-OES)/ 842312051971', dept: '토양·자원순환팀', emp: '김민재', endDt: '2026-09-25 17:00', step: '입찰진행(전송)' },
+      { days: 3,  prNo: 'CS2026092500002', item: '알루미늄 호일 D (51-65 psi)', dept: '역학성능평가팀', emp: '이재은', endDt: '2026-09-26 11:00', step: '입찰진행(전송)' }
+    ],
+    failed: [
+      { days: 13, prNo: 'CS2026091600007', item: '13C PFOS/ 1.2mL(Sodium perfluorooctanesulfonate)', dept: '분석화학평가팀', emp: '김수지', endDt: '2026-09-21 10:00', step: '유찰' },
+      { days: 7,  prNo: 'CS2026092200011', item: 'STD Ash samle(회용융온도)(GBW11124h)', dept: '토양·자원순환팀', emp: '김지우', endDt: '2026-09-28 16:00', step: '유찰' },
+      { days: 1,  prNo: 'CS2026092300002', item: 'KCCM 21052/ E.Coli', dept: '수질환경팀', emp: '김정아', endDt: '2026-09-28 17:00', step: '유찰' }
+    ]
+  };
+  var real = window.fetch.bind(window);
+  window.fetch = function (input, init) {
+    var url = (typeof input === 'string') ? input : (input && input.url) || '';
+    if (url.indexOf('bid-monitor') >= 0) {
+      return Promise.resolve(new Response(JSON.stringify(DEMO), {
+        status: 200, headers: { 'Content-Type': 'application/json' }
+      }));
+    }
+    return real(input, init);
+  };
+})();
+</script>
+<div style="max-width:1180px;margin:14px auto 0;padding:11px 16px;border-radius:12px;
+  background:#fff8e6;border:1px solid #f3dfa8;color:#6b4e12;font-size:13px;line-height:1.7;
+  font-family:system-ui,'Malgun Gothic',sans-serif">
+  <b>오프라인 미리보기</b> — 서버 없이 열어 보는 사본입니다.
+  시세·씨마켓·소모품·재고·화환·사택은 <b>라이브 실제 값</b>이고,
+  <b>누락 모니터링만 예시 데이터</b>입니다(아직 배포 전).
+  배포용 파일은 <code>index.html</code> 입니다.
+</div>
 
 <!-- ============================================================
      링크 수정 위치 — 아래 href 값만 실제 주소로 바꾸면 됩니다.
@@ -1809,7 +1857,7 @@ footer b{ color:var(--text-2); font-weight:700; }
         .catch(viaBrowserToken);
     }
 
-    fetch('/api/boxhero' + (boxType ? '?type=' + boxType : ''), { cache:'no-store' })
+    fetch('https://fiti-procurement-portal.vercel.app/api/boxhero' + (boxType ? '?type=' + boxType : ''), { cache:'no-store' })
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(s){
         if(s && s.success === true){ renderBox(s); return; }
@@ -1833,11 +1881,11 @@ footer b{ color:var(--text-2); font-weight:700; }
      그래서 사람이 넣은 값을 씁니다. 순서는 이렇습니다.
        1. /api/bid  — Blob 에 저장된 값 (씨마켓 북마클릿으로 갱신 · 배포 불필요)
        2. data/bid.json — 정적 파일 (예전 방식, 고치면 배포해야 함) */
-  fetch('/api/bid', { cache:'no-store' })
+  fetch('https://fiti-procurement-portal.vercel.app/api/bid', { cache:'no-store' })
     .then(function(r){ return r.ok ? r.json() : null; })
     .then(function(j){
       if(j && j.success && j.kpi) return j;                   // Blob 값이 있으면 그걸로
-      return fetch('data/bid.json', { cache:'no-store' })     // 없으면 정적 파일
+      return fetch('https://fiti-procurement-portal.vercel.app/data/bid.json', { cache:'no-store' })     // 없으면 정적 파일
         .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); });
     })
     .then(function(b){
@@ -1942,11 +1990,11 @@ footer b{ color:var(--text-2); font-weight:700; }
 
   /* API(Blob) 를 먼저 보고, 없으면 정적 파일로 넘어갑니다 — 씨마켓과 같은 방식.
      API 가 살아 있으면 그룹웨어에서 수집 스크립트만 돌리면 배포 없이 갱신됩니다. */
-  fetch('/api/bid-monitor', { cache:'no-store' })
+  fetch('https://fiti-procurement-portal.vercel.app/api/bid-monitor', { cache:'no-store' })
     .then(function(r){ return r.ok ? r.json() : null; })
     .then(function(j){
       if (j && j.counts) return j;
-      return fetch('data/bid-monitor.json', { cache:'no-store' })
+      return fetch('https://fiti-procurement-portal.vercel.app/data/bid-monitor.json', { cache:'no-store' })
         .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); });
     })
     .then(function(j){ bmData = j; bmRender(); $('#bidmon').hidden = false; })
@@ -2011,7 +2059,7 @@ footer b{ color:var(--text-2); font-weight:700; }
   /* price-sand 에는 집계 API 가 없고 데이터가 페이지 안에 들어 있습니다.
      브라우저에서 직접 읽으면 CORS 에 막히므로 포털의 서버 함수(api/price.js)가
      대신 받아서 숫자만 세어 줍니다. */
-  fetch('/api/price', { cache:'no-store' })
+  fetch('https://fiti-procurement-portal.vercel.app/api/price', { cache:'no-store' })
     .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
     .then(function(j){
       if(!j || j.success !== true || j.ordered == null) throw new Error('no count');
@@ -2140,7 +2188,7 @@ footer b{ color:var(--text-2); font-weight:700; }
     });
   }
 
-  fetch('/api/market', { cache:'no-store' })
+  fetch('https://fiti-procurement-portal.vercel.app/api/market', { cache:'no-store' })
     .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
     .then(function(j){
       if(!j || !j.data) throw new Error('bad payload');

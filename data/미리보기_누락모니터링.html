@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>누락 모니터링 미리보기 · 전략구매팀 업무포털</title>
+<style>
+:root{
+  --font:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",system-ui,sans-serif;
+  --bg:#eef2f7; --surface:#fff; --surface-2:#f7f9fc; --surface-3:#eef2f7;
+  --border:#dde4ed; --border-strong:#c7d2e0;
+  --text:#14202e; --text-2:#4a5a6e; --text-3:#7c8c9f;
+  --brand:#0d4d8f; --brand-soft:#e7f0fb;
+  --accent:#0d6efd; --accent-soft:#e5eefe;
+  --shadow-sm:0 1px 2px rgba(16,32,52,.06),0 2px 6px rgba(16,32,52,.05);
+  --r-md:14px; --r-lg:20px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding:26px 20px 60px}
+.note{background:#fff8e6;border:1px solid #f3dfa8;border-radius:12px;padding:13px 16px;font-size:13px;color:#6b4e12;line-height:1.75}
+.note b{color:#4a3607}
+.bidbar{margin-top:20px;padding:18px 20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-sm)}
+.bidbar__head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.bidbar__head h2{margin:0;font-size:15.5px;font-weight:800;letter-spacing:-.025em}
+.bidbar__meta{font-size:12px;color:var(--text-3);font-weight:700}
+.bidbar__link{margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:var(--brand);padding:5px 11px;border-radius:999px;background:var(--brand-soft);border:1px solid rgba(13,77,143,.22);text-decoration:none}
+.bidbar__kpis{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(128px,1fr))}
+.bkpi{padding:11px 13px;border-radius:var(--r-md);background:var(--surface-2);border:1px solid var(--border)}
+.bkpi__k{display:block;font-size:11.5px;color:var(--text-3);font-weight:700;white-space:nowrap}
+.bkpi__v{display:block;margin-top:3px;font-size:22px;font-weight:800;letter-spacing:-.04em;color:var(--text);font-variant-numeric:tabular-nums;line-height:1.15}
+.bkpi__v .unit{font-size:12px;font-weight:700;color:var(--text-3);margin-left:2px;letter-spacing:0}
+.bidbar__fail{margin-top:16px;padding-top:14px;border-top:1px dashed var(--border-strong)}
+.bfail__h{display:flex;align-items:baseline;gap:8px;margin-bottom:9px;font-size:12.5px;font-weight:800;color:var(--text-2)}
+.bfail__h span{font-size:11.5px;color:var(--text-3);font-weight:700;margin-left:auto}
+.bfail__row{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:10px;align-items:center;margin:6px 0}
+.bfail__l{font-size:12.5px;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bfail__bar{grid-column:1/-1;height:7px;border-radius:999px;background:var(--surface-3);overflow:hidden;margin-top:-2px}
+.bfail__bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#e07a3f,#d9534f)}
+.bfail__n{font-size:12px;font-weight:800;color:var(--text-3);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bidmon{margin-top:16px;padding-top:14px;border-top:1px dashed var(--border-strong)}
+.bidmon__h{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:11px}
+.bidmon__h b{font-size:13px;font-weight:800}
+.bidmon__h span{font-size:11.5px;color:var(--text-3);font-weight:700}
+.bidmon__tabs{display:grid;gap:9px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+.bmtab{text-align:left;cursor:pointer;padding:11px 13px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-sm);font:inherit}
+.bmtab:hover{border-color:var(--accent)}
+.bmtab.on{border-color:var(--accent);background:var(--accent-soft)}
+.bmtab__k{display:block;font-size:10.5px;font-weight:800;color:var(--text-3);letter-spacing:.02em}
+.bmtab__v{display:block;margin-top:4px;font-size:19px;font-weight:900;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.bmtab__v .unit{font-size:11.5px;font-weight:700;margin-left:2px;color:var(--text-3)}
+.bmtab.warn .bmtab__v{color:#d9384a}
+.bidmon__list{margin-top:12px;overflow:auto;max-height:320px;border:1px solid var(--border);border-radius:var(--r-md)}
+.bidmon__list table{width:100%;border-collapse:separate;border-spacing:0;font-size:11.5px}
+.bidmon__list th,.bidmon__list td{padding:7px 9px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--border)}
+.bidmon__list th{position:sticky;top:0;background:var(--surface-2);font-size:10.5px;font-weight:800;color:var(--text-3);z-index:2}
+.bidmon__list td.d{font-variant-numeric:tabular-nums;font-weight:800;text-align:right}
+.bidmon__list tr.hot td.d{color:#d9384a}
+.bidmon__list tr.mid td.d{color:#c2680a}
+.bidmon__note{font-size:10.5px;color:var(--text-3);margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="note">
+    <b>미리보기입니다.</b> 포털 「입찰구매 현황」 카드에 <b>누락 모니터링</b>을 붙인 모습입니다 —
+    유찰 사유 분포 바로 아래, 점선 구분선 다음에 들어갑니다.<br>
+    위쪽 KPI 와 유찰 사유는 <b>2026-09-29 라이브 값</b>이고, 누락 모니터링 목록은 <b>모양을 보여 주는 예시</b>입니다.
+    CSS 와 그리는 코드는 포털에 들어간 것과 같습니다 — <b>탭 세 개를 눌러 보세요.</b>
+  </div>
+
+  <section class="bidbar">
+    <div class="bidbar__head">
+      <h2>입찰구매 현황</h2>
+      <span class="bidbar__meta">26.09.01 ~ 26.09.30 · 씨마켓플레이스 · 나의 거래 요약 · 2026-09-29 기준</span>
+      <a class="bidbar__link" href="https://www.c-market.net/buyer/dashboard" target="_blank" rel="noopener">씨마켓에서 보기 ↗</a>
+    </div>
+    <div class="bidbar__kpis" id="kpis"></div>
+    <div class="bidbar__fail" id="fail"></div>
+    <div class="bidmon" id="bidmon"></div>
+  </section>
+
+</div>
+<script>
+var $ = function (s) { return document.querySelector(s); };
+var esc = function (s) {
+  return String(s == null ? '' : s).replace(/[&<>"]/g, function (m) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m];
+  });
+};
+var num = function (n) { return Number(n || 0).toLocaleString('ko-KR'); };
+
+var KPI = [
+  ['진행중', 27], ['전체 마감', 278], ['총 계약', 235],
+  ['카드 결제 대기', 0], ['계산서 · 영수증', 120]
+];
+$('#kpis').innerHTML = KPI.map(function (x) {
+  return '<div class="bkpi"><span class="bkpi__k">' + esc(x[0]) + '</span>'
+       + '<span class="bkpi__v">' + num(x[1]) + '<span class="unit">건</span></span></div>';
+}).join('');
+
+var FAIL = { total: 39, reasons: [
+  { label: '입찰금액이 구매목표가 보다 높습니다.', count: 23 },
+  { label: '사용부서와 협의결과 조건이 맞지 않아 유찰하기로 하였습니다.', count: 6 },
+  { label: '사유 미지정', count: 4 },
+  { label: '기타', count: 3 },
+  { label: '응찰업체가 없습니다.', count: 3 }
+] };
+$('#fail').innerHTML =
+  '<div class="bfail__h">유찰 사유 분포<span>총 유찰 ' + num(FAIL.total) + '건 기준</span></div>'
+  + FAIL.reasons.map(function (r) {
+      var pct = FAIL.total ? (r.count / FAIL.total * 100) : 0;
+      return '<div class="bfail__row"><span class="bfail__l">' + esc(r.label) + '</span>'
+        + '<span class="bfail__n">' + num(r.count) + '건 · ' + pct.toFixed(1) + '%</span>'
+        + '<span class="bfail__bar"><i style="width:' + pct.toFixed(1) + '%"></i></span></div>';
+    }).join('');
+
+var BM_TABS = [
+  { key: 'notSent', label: '입찰 누락',    hint: '품의만 올리고 입찰 전송 안 함' },
+  { key: 'stalled', label: '마감 후 정체', hint: '마감일이 지났는데 상태가 진행중' },
+  { key: 'failed',  label: '유찰 미처리',  hint: '유찰인데 재공고도 취소도 안 함' }
+];
+
+var bmData = {
+  asOf: '2026-09-29', totalRows: 1856,
+  counts: { notSent: 2, stalled: 4, failed: 3 },
+  notSent: [
+    { days: 12, prNo: 'CS2026091700021', item: 'Whatman 여과지 GF/C 47mm 외 2건', dept: '수질환경팀', emp: '김정아', endDt: '2026-09-17 17:00', step: '품의완료' },
+    { days: 8,  prNo: 'CS2026092100004', item: '표준시약 Cd 1000ppm', dept: '분석화학평가팀', emp: '최정환', endDt: '2026-09-21 16:00', step: '품의완료' }
+  ],
+  stalled: [
+    { days: 11, prNo: 'CS2026091800007', item: '가스검지관 4LT / 황화수소 / 0.05~4.0 ppm 외 1건', dept: '생활안전보건팀', emp: '정승표', endDt: '2026-09-18 13:00', step: '입찰진행(전송)' },
+    { days: 9,  prNo: 'CS2026092000012', item: 'FILAMENT (811479471) For Dioxins Analysis', dept: '화학·바이오분석팀', emp: '서병수', endDt: '2026-09-20 16:00', step: '입찰진행(전송)' },
+    { days: 4,  prNo: 'CS2026092200013', item: 'Centre Tube 2.0 (ICP-OES)/ 842312051971', dept: '토양·자원순환팀', emp: '김민재', endDt: '2026-09-25 17:00', step: '입찰진행(전송)' },
+    { days: 3,  prNo: 'CS2026092500002', item: '알루미늄 호일 D (51-65 psi)', dept: '역학성능평가팀', emp: '이재은', endDt: '2026-09-26 11:00', step: '입찰진행(전송)' }
+  ],
+  failed: [
+    { days: 13, prNo: 'CS2026091600007', item: '13C PFOS/ 1.2mL(Sodium perfluorooctanesulfonate)', dept: '분석화학평가팀', emp: '김수지', endDt: '2026-09-21 10:00', step: '유찰' },
+    { days: 7,  prNo: 'CS2026092200011', item: 'STD Ash samle(회용융온도)(GBW11124h)', dept: '토양·자원순환팀', emp: '김지우', endDt: '2026-09-28 16:00', step: '유찰' },
+    { days: 1,  prNo: 'CS2026092300002', item: 'KCCM 21052/ E.Coli', dept: '수질환경팀', emp: '김정아', endDt: '2026-09-28 17:00', step: '유찰' }
+  ]
+};
+var bmPick = 'stalled';
+
+function bmTone(d) { return d >= 10 ? 'hot' : (d >= 7 ? 'mid' : ''); }
+function bmRows(k) { return (bmData && Array.isArray(bmData[k])) ? bmData[k] : []; }
+
+function bmListHtml() {
+  var rows = bmRows(bmPick);
+  if (!rows.length) return '<p class="bidmon__note">해당하는 건이 없습니다.</p>';
+  return '<div class="bidmon__list"><table><thead><tr>'
+    + '<th>경과</th><th>구매번호</th><th>품명</th><th>수요부서</th><th>담당자</th><th>마감</th><th>단계</th>'
+    + '</tr></thead><tbody>'
+    + rows.map(function (r) {
+        return '<tr class="' + bmTone(r.days || 0) + '">'
+          + '<td class="d">' + num(r.days || 0) + '일</td>'
+          + '<td>' + esc(r.prNo || '-') + '</td>'
+          + '<td>' + esc(r.item || '-') + '</td>'
+          + '<td>' + esc(r.dept || '-') + '</td>'
+          + '<td>' + esc(r.emp || '-') + '</td>'
+          + '<td>' + esc(r.endDt || '-') + '</td>'
+          + '<td>' + esc(r.step || '-') + '</td>'
+          + '</tr>';
+      }).join('')
+    + '</tbody></table></div>';
+}
+
+function bmRender() {
+  var c = (bmData && bmData.counts) || {};
+  $('#bidmon').innerHTML =
+    '<div class="bidmon__h"><b>누락 모니터링</b><span>입찰-소모품 '
+      + num(bmData.totalRows || 0) + '건 기준 · ' + (bmData.asOf || '') + '</span></div>'
+    + '<div class="bidmon__tabs">'
+    + BM_TABS.map(function (t) {
+        var n = c[t.key] || 0;
+        return '<button type="button" class="bmtab' + (t.key === bmPick ? ' on' : '')
+          + (n > 0 ? ' warn' : '') + '" data-bm="' + t.key + '" title="' + esc(t.hint) + '">'
+          + '<span class="bmtab__k">' + t.label + '</span>'
+          + '<span class="bmtab__v">' + num(n) + '<span class="unit">건</span></span>'
+          + '</button>';
+      }).join('')
+    + '</div>'
+    + bmListHtml()
+    + '<p class="bidmon__note">'
+    + esc(BM_TABS.filter(function (t) { return t.key === bmPick; })[0].hint)
+    + ' · 최근 14일 이내만 · 10일 이상 적색, 7일 이상 주황</p>';
+
+  Array.prototype.forEach.call(document.querySelectorAll('#bidmon .bmtab'), function (b) {
+    b.addEventListener('click', function () { bmPick = b.dataset.bm; bmRender(); });
+  });
+}
+bmRender();
+</script>
+</body>
+</html>

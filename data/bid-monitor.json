@@ -1,0 +1,35 @@
+{
+  "asOf": "2026-09-29",
+  "scope": "입찰-소모품 (searchPobzCd C00)",
+  "totalRows": 1856,
+  "note": "그룹웨어 CDTS5122 탭에서 bid-monitor.js 를 돌려 window.__bid 를 여기에 붙여 넣습니다.",
+  "counts": { "notSent": 1, "stalled": 6, "failed": 82 },
+  "notSent": [
+    { "days": 119, "prNo": "CS2026060200009", "item": "EMT Duo Torch (ICP-OES)", "dept": "토양·자원순환팀", "emp": "김민재", "endDt": "", "step": "품의진행" }
+  ],
+  "stalled": [
+    { "days": 14, "prNo": "CS2026091400003", "item": "", "dept": "화학·바이오분석팀", "emp": "전지혜", "endDt": "09-15 13:00", "step": "품의진행(구매)" },
+    { "days": 14, "prNo": "CS2026090900016", "item": "", "dept": "화학·바이오분석팀", "emp": "서병수", "endDt": "09-15 12:00", "step": "품의진행(구매)" },
+    { "days": 4,  "prNo": "CS2026092300007", "item": "", "dept": "섬유소재평가팀", "emp": "이서하", "endDt": "09-24 18:00", "step": "입찰진행" },
+    { "days": 4,  "prNo": "CS2026092300006", "item": "", "dept": "섬유소재평가팀", "emp": "권구훈", "endDt": "09-24 18:00", "step": "입찰진행" },
+    { "days": 4,  "prNo": "CS2026092200010", "item": "", "dept": "생활안전보건팀", "emp": "정승표", "endDt": "09-25 13:00", "step": "입찰진행" },
+    { "days": 3,  "prNo": "CS2026092200013", "item": "", "dept": "토양·자원순환팀", "emp": "김민재", "endDt": "09-25 17:00", "step": "입찰진행" }
+  ],
+  "failed": [
+    { "days": 255, "prNo": "CS2026011500005", "item": "", "dept": "", "emp": "", "endDt": "01-17", "step": "입찰마감" },
+    { "days": 250, "prNo": "CS2026012100010", "item": "", "dept": "", "emp": "", "endDt": "01-22", "step": "입찰마감" },
+    { "days": 239, "prNo": "CS2026012900007", "item": "", "dept": "", "emp": "", "endDt": "02-02", "step": "입찰마감" },
+    { "days": 221, "prNo": "CS2026021900004", "item": "", "dept": "", "emp": "", "endDt": "02-20", "step": "입찰마감" },
+    { "days": 219, "prNo": "CS2026022000010", "item": "", "dept": "", "emp": "", "endDt": "02-22", "step": "입찰마감" },
+    { "days": 210, "prNo": "CS2026030200001", "item": "", "dept": "", "emp": "", "endDt": "03-03", "step": "입찰마감" },
+    { "days": 207, "prNo": "CS2026022600012", "item": "", "dept": "", "emp": "", "endDt": "03-06", "step": "입찰마감" },
+    { "days": 197, "prNo": "CS2026031300005", "item": "", "dept": "", "emp": "", "endDt": "03-16", "step": "입찰마감" },
+    { "days": 151, "prNo": "CS2026040700016", "item": "", "dept": "", "emp": "", "endDt": "05-01", "step": "입찰마감" },
+    { "days": 119, "prNo": "CS2026060100008", "item": "", "dept": "수질환경팀", "emp": "", "endDt": "", "step": "유찰" }
+  ],
+  "byEmp": [
+    { "name": "김민재", "dept": "토양·자원순환팀", "count": 4 },
+    { "name": "김정아", "dept": "수질환경팀", "count": 3 },
+    { "name": "김지원", "dept": "역학성능평가팀", "count": 2 }
+  ]
+}
