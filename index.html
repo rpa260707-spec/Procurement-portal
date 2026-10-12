@@ -1896,6 +1896,13 @@ footer b{ color:var(--text-2); font-weight:700; }
      14일이 넘은 건은 애초에 수집에서 뺍니다(따로 사유가 있는 건이라 보고 제외). */
   function bmTone(d){ return d >= 10 ? 'hot' : (d >= 7 ? 'mid' : ''); }
 
+  /* 탭 숫자와 목록 줄 수가 다르면 그대로 적습니다.
+     수집이 표본만 담았거나 300건에서 잘린 경우입니다 — 숨기면 "82건인데 10줄"로 보여 혼란합니다. */
+  function bmGapNote(c){
+    var shown = bmRows(bmPick).length, total = (c && c[bmPick]) || 0;
+    return total > shown ? ' · ' + num(total) + '건 중 ' + num(shown) + '건만 받아 왔습니다' : '';
+  }
+
   function bmRender(){
     var c = (bmData && bmData.counts) || {};
     $('#bidmon').innerHTML =
@@ -1913,7 +1920,8 @@ footer b{ color:var(--text-2); font-weight:700; }
       + '</div>'
       + bmListHtml()
       + '<p class="bidmon__note">' + esc(BM_TABS.filter(function(t){ return t.key === bmPick; })[0].hint)
-      + ' · 최근 마감일 순 · 10일 이상 적색, 7일 이상 주황</p>';
+      + ' · 최근 마감일 순 · 10일 이상 적색, 7일 이상 주황'
+      + bmGapNote(c) + '</p>';
 
     $$('#bidmon .bmtab').forEach(function(b){
       b.addEventListener('click', function(){ bmPick = b.dataset.bm; bmRender(); });
