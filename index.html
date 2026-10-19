@@ -670,6 +670,7 @@ footer b{ color:var(--text-2); font-weight:700; }
 .bidmon__h{ display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin-bottom:11px; }
 .bidmon__h b{ font-size:13px; font-weight:800; }
 .bidmon__h span{ font-size:11.5px; color:var(--text-3); font-weight:700; }
+.bidmon__h .bidmon__stale{ font-size:11px; font-weight:800; color:#dc2626; background:#fee2e2; border-radius:99px; padding:2px 9px; }
 .bidmon__tabs{ display:grid; gap:9px; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); }
 .bmtab{ text-align:left; cursor:pointer; padding:11px 13px; border-radius:var(--r-md);
   background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow-sm); }
@@ -1902,12 +1903,25 @@ footer b{ color:var(--text-2); font-weight:700; }
     var shown = bmRows(bmPick).length, total = (c && c[bmPick]) || 0;
     return total > shown ? ' · ' + num(total) + '건 중 ' + num(shown) + '건만 받아 왔습니다' : '';
   }
+  /* 자료가 며칠 된 것인지 세어 오래되면 대놓고 말합니다.
+     씨마켓은 유저스크립트가 매일 갱신하는데 누락 모니터링은 수집을 안 돌리면 그대로 멈춰 있어,
+     「개선이 안 됐나」 하고 코드를 의심하게 됩니다. 그 혼동을 없애려는 줄입니다. */
+  function bmStale(asOf){
+    var m = String(asOf || '').match(/(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return '';
+    var d = new Date(+m[1], +m[2] - 1, +m[3]);
+    var t = new Date(); t.setHours(0, 0, 0, 0);
+    var days = Math.round((t - d) / 86400000);
+    if (days < 7) return '';
+    return '<span class="bidmon__stale">' + num(days) + '일 전 자료입니다 — 그룹웨어에서 수집 스크립트를 돌려 주세요</span>';
+  }
+
 
   function bmRender(){
     var c = (bmData && bmData.counts) || {};
     $('#bidmon').innerHTML =
       '<div class="bidmon__h"><b>누락 모니터링</b><span>입찰-소모품 '
-        + num(bmData.totalRows || 0) + '건 기준 · ' + (bmData.asOf || '') + '</span></div>'
+        + num(bmData.totalRows || 0) + '건 기준 · ' + (bmData.asOf || '') + '</span>' + bmStale(bmData.asOf) + '</div>'
       + '<div class="bidmon__tabs">'
       + BM_TABS.map(function(t){
           var n = c[t.key] || 0;
