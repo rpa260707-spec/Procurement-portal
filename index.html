@@ -1929,10 +1929,11 @@ footer b{ color:var(--text-2); font-weight:700; }
         var line = (t.split('\n').filter(function(x){ return x.indexOf('javascript:') === 0; })[0] || '').trim();
         if (!line) throw new Error('문서에서 북마클릿을 못 찾았습니다');
         var how = '즐겨찾기 막대에서 오른쪽 클릭 → 페이지 추가\n'
+                + '(이미 있으면 그 즐겨찾기 오른쪽 클릭 → 수정)\n'
                 + '이름 : 누락 모니터링 수집\n'
                 + 'URL  : 붙여넣기(Ctrl+V)\n\n'
-                + '그다음 그룹웨어 입찰구매관리(CDTS5122) → 입찰-소모품 조회 →\n'
-                + '페이지당 건수를 최대로 놓고 그 즐겨찾기를 누르면 됩니다.';
+                + '그다음 그룹웨어 입찰정보관리(CDTS5122) 조회 →\n'
+                + '목록에서 오른쪽 클릭 → 「클립보드로 복사」 → 그 즐겨찾기 클릭.';
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(line)
             .then(function(){ alert('수집 스크립트를 복사했습니다.\n\n' + how); })
