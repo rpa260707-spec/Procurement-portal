@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>사례별 구매 올리기 · 수요부서 업무포털</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<style>
+/* 08 수요부서 포털과 같은 토큰입니다. 한쪽을 고치면 보기가 어긋납니다 */
+:root{
+  --bg:#f4f6fb; --panel:#fff; --line:#e2e7f0; --text:#101729; --text-2:#5a6377;
+  --accent:#2563eb; --accent-soft:#eef3ff;
+  --bad:#b42318; --bad-soft:#fef3f2; --bad-line:#fecdca;
+  --good:#067647; --good-soft:#ecfdf3; --good-line:#abefc6;
+  --warn:#8a6512; --warn-soft:#fdf6e3; --warn-line:#f2e3bd;
+  --radius:18px; --shadow:0 1px 2px rgba(16,24,40,.05),0 8px 24px rgba(16,24,40,.06);
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0e1118; --panel:#161a23; --line:#262c3a; --text:#e9ecf4; --text-2:#99a1b3;
+        --accent:#7f9cff; --accent-soft:rgba(127,156,255,.13);
+        --bad:#ff9c92; --bad-soft:rgba(255,120,110,.1); --bad-line:rgba(255,120,110,.3);
+        --good:#6ddc9f; --good-soft:rgba(80,210,150,.1); --good-line:rgba(80,210,150,.3);
+        --warn:#e0b65c; --warn-soft:rgba(224,182,92,.1); --warn-line:rgba(224,182,92,.3);
+        --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  font-size:15px;line-height:1.62;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:900px;margin:0 auto;padding:40px 20px 56px}
+
+.badge{display:inline-flex;align-items:center;gap:8px;padding:7px 15px;border:1px solid var(--line);
+  background:var(--panel);border-radius:99px;font-size:12.5px;font-weight:700;color:var(--text-2);box-shadow:var(--shadow)}
+.badge i{width:7px;height:7px;border-radius:50%;background:#16a34a;display:inline-block}
+.back{display:inline-block;margin-left:8px;font-size:12.5px;font-weight:700;color:var(--accent)}
+h1{margin:22px 0 0;font-size:31px;line-height:1.3;letter-spacing:-1.1px;font-weight:800}
+h1 em{font-style:normal;color:var(--accent)}
+.lead{margin:15px 0 0;font-size:14.5px;color:var(--text-2)}
+.lead b{color:var(--text);font-weight:700}
+
+.sec{margin-top:34px}
+.sec__h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:13px}
+.sec__t{font-size:17px;font-weight:800;letter-spacing:-.4px}
+.sec__d{font-size:12.5px;color:var(--text-2)}
+
+.box{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px 20px;box-shadow:var(--shadow)}
+.box h3{margin:0 0 4px;font-size:14px;font-weight:800}
+.box p{margin:0 0 11px;font-size:12.5px;color:var(--text-2)}
+.box p:last-child{margin-bottom:0}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{width:116px;font-size:12px;font-weight:800;color:var(--text);white-space:nowrap;
+  background:var(--accent-soft);border-right:1px solid var(--line)}
+td{line-height:1.75}
+tr:last-child th,tr:last-child td{border-bottom:0}
+.more{margin:14px 0 0;padding:11px 13px;background:var(--bg);border-radius:10px;
+  font-size:12px;line-height:1.8;color:var(--text-2)}
+.more a{color:var(--accent);font-weight:700}
+
+/* ── 공식 ── 품목이 어떤 것이냐 → 어느 방법이냐. 사례보다 이것을 먼저 봅니다 */
+.fx{margin-top:0}
+.fx table{font-size:13px}
+.fx th{width:auto;background:var(--accent-soft)}
+.fx thead th{font-size:11px;letter-spacing:.3px;color:var(--text-2);background:var(--bg);border-right:0}
+.fx td{padding:10px 12px}
+.fx .what{font-weight:700;color:var(--text)}
+.fx .what s{display:block;text-decoration:none;font-weight:500;font-size:11.5px;color:var(--text-2);margin-top:2px}
+.fx .arr{width:22px;text-align:center;color:var(--text-2);padding-left:0;padding-right:0}
+.fx .why{font-size:12px;color:var(--text-2);line-height:1.7}
+.fx .why b{color:var(--text);font-weight:700}
+.v{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.v.bid{background:#DCEBEA;color:#0C4145}
+.v.priv{background:#F5EBD3;color:#8A6512}
+.v.unit{background:#e8e3fb;color:#5b3fd1}
+.v.etc{background:#eef1f5;color:#5a6377}
+@media (prefers-color-scheme:dark){
+  .v.bid{background:#12302F;color:#8FD0D4} .v.priv{background:#2B2415;color:#CBA14E}
+  .v.unit{background:#241d3d;color:#b5a4f5} .v.etc{background:#232a36;color:#99a1b3}
+}
+.art{display:block;margin-top:3px;font-size:10.5px;font-weight:700;color:var(--text-2)}
+
+/* ── 사례 카드 ── */
+.case{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px;box-shadow:var(--shadow);margin-top:14px}
+.case__n{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.4px;color:var(--accent)}
+.case__t{margin:6px 0 0;font-size:18px;font-weight:800;letter-spacing:-.45px}
+.case__s{margin:8px 0 0;font-size:13px;color:var(--text-2)}
+.case__s b{color:var(--text);font-weight:700}
+
+.ab{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}
+.ab > div{border:1px solid var(--line);border-radius:12px;padding:13px 14px;font-size:12.5px;line-height:1.72}
+.ab .no{background:var(--bad-soft);border-color:var(--bad-line)}
+.ab .yes{background:var(--good-soft);border-color:var(--good-line)}
+.ab h4{margin:0 0 6px;font-size:12.5px;font-weight:800;display:flex;align-items:center;gap:6px}
+.ab .no h4{color:var(--bad)} .ab .yes h4{color:var(--good)}
+.ab h4 span{font-size:14px;line-height:1}
+.ab ul{margin:0;padding-left:17px} .ab li{margin:3px 0}
+.ab b{font-weight:800}
+
+/* 비고란에 그대로 베껴 쓰는 글 */
+.quote{margin-top:13px;padding:12px 14px;background:var(--bg);border:1px solid var(--line);
+  border-left:3px solid var(--accent);border-radius:10px;font-size:12.5px;line-height:1.8}
+.quote em{display:block;font-style:normal;font-size:11px;font-weight:800;color:var(--accent);margin-bottom:5px}
+.quote .fill{background:var(--accent-soft);border-radius:4px;padding:0 4px;font-weight:700}
+
+.note{margin-top:13px;padding:11px 13px;background:var(--warn-soft);border:1px solid var(--warn-line);
+  border-radius:10px;font-size:12px;line-height:1.75;color:var(--text)}
+.note b{color:var(--warn);font-weight:800}
+
+/* ── 화면 그림 ──
+   그룹웨어는 사내망이라 이 화면에서 직접 찍을 수 없습니다. 아래는 같은 꼴로 다시 그린 그림입니다.
+   진짜 캡처로 바꾸시려면 이 figure 안을 <img src="shot-○○.png" alt="…"> 한 줄로 갈아 끼우면 됩니다.
+   그림은 2026-11-03 기준 화면입니다 — 메뉴가 바뀌면 같이 고치세요. */
+figure.shot{margin:15px 0 0}
+.shot__f{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;
+  box-shadow:0 1px 2px rgba(16,24,40,.06);color:#15201F}
+.shot__bar{display:flex;align-items:center;gap:7px;padding:7px 11px;background:#F3F5F4;
+  border-bottom:1px solid #E6EBEA;font-size:10.5px;font-weight:700;color:#6C7B79}
+.shot__bar i{width:8px;height:8px;border-radius:50%;background:#D4DBD9;display:inline-block;font-style:normal}
+figcaption{margin-top:7px;font-size:11.5px;color:var(--text-2);line-height:1.7}
+figcaption b{color:var(--text);font-weight:700}
+
+/* 05 소모품 가격검색 — 그 화면의 색을 그대로 씁니다 */
+.px{padding:11px;font-size:12px;font-family:"맑은 고딕","Malgun Gothic","Apple SD Gothic Neo",sans-serif}
+.px__q{display:flex;gap:7px;margin-bottom:4px}
+.px__q span{flex:1;border:1px solid #12595E;border-radius:6px;padding:5px 9px;font-size:11.5px;color:#15201F;background:#fff}
+.px__q b{border:1px solid #12595E;background:#12595E;color:#fff;border-radius:6px;padding:5px 12px;font-size:11.5px;font-weight:700}
+.px__h{font-size:10px;color:#6C7B79;margin:0 0 9px}
+table.px__t{width:100%;border-collapse:collapse;font-size:11.5px;color:#15201F}
+table.px__t th{background:#F8FAF9;color:#6C7B79;font-size:9.5px;font-weight:600;letter-spacing:.06em;
+  padding:5px 7px;border-bottom:1px solid #D4DBD9;border-right:0;white-space:nowrap;width:auto}
+table.px__t td{padding:6px 7px;border-bottom:1px solid #E6EBEA;white-space:nowrap;line-height:1.5}
+table.px__t tr:last-child td{border-bottom:0}
+table.px__t tr.sub td{background:#F8FAF9;color:#3E4E4C;font-size:10.5px}
+table.px__t .r{text-align:right;font-variant-numeric:tabular-nums}
+table.px__t .d{color:#6C7B79;font-size:10.5px}
+.tag{display:inline-block;font-style:normal;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px}
+.tag.bid{background:#DCEBEA;color:#0C4145}
+.tag.priv{background:#F5EBD3;color:#8A6512}
+.tag.unit{background:#e8e3fb;color:#5b3fd1}
+.tag + .tag{margin-left:3px}
+
+/* 그룹웨어 구매업무 고르는 칸 */
+.gw{padding:13px;background:#fff;font-size:12px}
+.gw__l{font-size:11px;font-weight:700;color:#6C7B79;margin-bottom:5px}
+.gw__sel{border:1px solid #D4DBD9;border-radius:5px;background:#fff;overflow:hidden;max-width:300px}
+.gw__o{padding:6px 11px;font-size:11.5px;color:#15201F;border-bottom:1px solid #F0F3F2;
+  display:flex;justify-content:space-between;gap:10px;align-items:center}
+.gw__o:last-child{border-bottom:0}
+.gw__o.on{background:#DCEBEA;font-weight:700}
+.gw__o u{text-decoration:none;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;flex:none}
+.gw__o u.bid{background:#DCEBEA;color:#0C4145}
+.gw__o u.priv{background:#F5EBD3;color:#8A6512}
+.gw__o u.etc{background:#F0F3F2;color:#6C7B79}
+.gw__o.soon{color:#6C7B79;font-style:italic}
+
+footer{margin-top:38px;padding-top:18px;border-top:1px solid var(--line);
+  font-size:12px;color:var(--text-2);display:flex;flex-wrap:wrap;gap:6px}
+footer b{color:var(--text)}
+.dot{opacity:.45}
+
+@media (max-width:620px){
+  .wrap{padding:28px 16px 40px}
+  h1{font-size:23px;letter-spacing:-.7px}
+  .ab{grid-template-columns:1fr}
+  th{width:88px}
+  .shot__f{overflow-x:auto}
+  .fx .arr{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="badge"><i></i>(재)FITI시험연구원 · 수요부서 업무포털</span>
+  <a class="back" href="../">← 수요부서 포털</a>
+
+  <h1>사례별 구매 올리기<br><em>수의계약은</em> 마지막에 꺼내는 수입니다.</h1>
+
+  <p class="lead">
+    구매의 <b>원칙은 경쟁입찰</b>입니다. 수의계약은 「구매 및 계약 업무요령」 <b>제15조의2</b> 각 항에
+    해당할 때만 쓰는 <b>예외</b>입니다. 조문만으로는 내 품목이 어디에 드는지 가리기 어려워,
+    <b>품목이 어떤 것이냐로 바로 정해지는 공식</b>과 실제로 자주 올라오는 사례를 함께 실었습니다.
+  </p>
+
+  <!-- ── 0. 공식 ───────────────────────────────────── -->
+  <section class="sec">
+    <div class="sec__h">
+      <span class="sec__t">공식 — 품목이 무엇이냐로 정해집니다</span>
+      <span class="sec__d">금액이 아니라 품목의 성격이 먼저입니다</span>
+    </div>
+
+    <div class="box fx">
+      <h3>내 품목을 왼쪽에서 찾으세요</h3>
+      <p>
+        <b>장비 소모성 케이블 → 지정업체 → 수의</b> 처럼, 품목의 성격이 정해지면 계약방법도 따라 정해집니다.
+        아래에 없는 품목은 <b>입찰이 기본값</b>입니다.
+      </p>
+      <table>
+        <thead>
+          <tr><th style="width:38%">품목 · 상황</th><th class="arr"></th><th style="width:26%">방법</th><th>왜</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="what">장비 전용 소모성 케이블 · 정품 부품<s>컬럼 · 전극 · 램프 · 전용 지그</s></td>
+            <td class="arr">→</td>
+            <td><span class="v priv">수의</span><b class="art">4항 지정업체</b></td>
+            <td class="why">그 장비에만 맞는 부품이라 <b>공급처가 정해져</b> 있습니다. 메뉴는 <b>소모품 구매</b></td>
+          </tr>
+          <tr>
+            <td class="what">고장 난 시험기기 수리 · 개조<s>제조사 엔지니어 출장</s></td>
+            <td class="arr">→</td>
+            <td><span class="v priv">수의</span><b class="art">4항 지정업체</b></td>
+            <td class="why">메뉴가 따로 있습니다 — <b>시험기기수리 / 개조 요청</b>. 출장비를 견적에 넣으세요</td>
+          </tr>
+          <tr>
+            <td class="what">시험규격이 제품을 지정한 소모품<s>견뢰도 오염포(KS·ISO) · 표준염색표 · 마틴데일 마모포</s></td>
+            <td class="arr">→</td>
+            <td><span class="v priv">수의</span><b class="art">5 · 6항 독점</b></td>
+            <td class="why">바꾸면 <b>시험 데이터가 끊깁니다</b>. 규격 조항이나 총판 확인서를 붙이세요</td>
+          </tr>
+          <tr>
+            <td class="what">표준가스 · 드라이클리닝 용매<s>취급 자격이 있는 업체만 공급</s></td>
+            <td class="arr">→</td>
+            <td><span class="v priv">수의</span><b class="art">4항 지정업체</b></td>
+            <td class="why">위험물 · 고압가스라 <b>취급 자격</b>이 공급처를 좁힙니다</td>
+          </tr>
+          <tr>
+            <td class="what">살아 있는 것 · 유효기간이 짧은 것<s>실험용 쥐(ICR) · 물벼룩 먹이 · 배지</s></td>
+            <td class="arr">→</td>
+            <td><span class="v unit">단가계약</span><span class="v priv">수의</span><b class="art">3항 품질유지기한</b></td>
+            <td class="why">단가계약이 있으면 <b>품의 없이 발주</b>. 없으면 3항 수의</td>
+          </tr>
+          <tr>
+            <td class="what">시중에 여러 곳이 파는 범용 소모품<s>와이프올 · 장갑 · 비닐 · 청소용품 · 토너 · 용지</s></td>
+            <td class="arr">→</td>
+            <td><span class="v bid">입찰</span><b class="art">수의 사유 없음</b></td>
+            <td class="why">누구나 납품할 수 있습니다. <b>10만원 이하라는 것은 사유가 아닙니다</b></td>
+          </tr>
+          <tr>
+            <td class="what">명함 · 봉투 · 리플릿 · 안내책자<s>인쇄물</s></td>
+            <td class="arr">→</td>
+            <td><span class="v etc">구매구분 인쇄물</span><b class="art">소모품 아님</b></td>
+            <td class="why">구매구분을 <b>「인쇄물」</b> 로 고르세요. 명함은 <b>단가가 정해져</b> 있어 바로 나갑니다</td>
+          </tr>
+          <tr>
+            <td class="what">시약<s>금액과 관계없이</s></td>
+            <td class="arr">→</td>
+            <td><span class="v bid">입찰</span><b class="art">지침에 명시</b></td>
+            <td class="why">소액이어도 입찰입니다. 1항(10만원)이 <b>적용되지 않습니다</b></td>
+          </tr>
+          <tr>
+            <td class="what">되풀이해 쓰는 시험소모품<s>한 해 여러 번 사는 것</s></td>
+            <td class="arr">→</td>
+            <td><span class="v bid">입찰-소모품</span><b class="art">소모품 등록 선행</b></td>
+            <td class="why">한 해 쓸 양을 <b>한 번에</b>. 되풀이되면 단가계약 후보로 알려 주세요</td>
+          </tr>
+          <tr>
+            <td class="what">입찰을 돌렸는데 유찰됨<s>단독응찰 · 응찰 없음</s></td>
+            <td class="arr">→</td>
+            <td><span class="v priv">수의</span><b class="art">2항 유찰</b></td>
+            <td class="why"><b>입찰을 먼저 돌려야</b> 생기는 사유입니다. 구매번호와 입찰결과를 붙이세요</td>
+          </tr>
+          <tr>
+            <td class="what">책상 · 의자 · PC · 모니터<s>1회성 · 단건</s></td>
+            <td class="arr">→</td>
+            <td><span class="v etc">일반구매요청</span><b class="art">금액 따라</b></td>
+            <td class="why">소모품이 아닙니다. <b>(일반/협조)구매요청</b> 메뉴로 올립니다</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="more">
+        <b>금액은 마지막에 봅니다.</b> 1항(10만원 이하)은 품목이 범용인데도 수의로 가도 되는 사유가 아니라,
+        <b>이미 수의가 가능한 건의 절차를 가볍게 해 주는</b> 조항에 가깝습니다.
+        위 표에서 <span class="v bid">입찰</span> 로 떨어진 품목은 금액이 얼마든 입찰입니다.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── 1. 올리기 전 30초 ─────────────────────────── -->
+  <section class="sec">
+    <div class="sec__h">
+      <span class="sec__t">확실하지 않으면 — 전에 어떻게 샀는지 보세요</span>
+      <span class="sec__d">품목명만 넣으면 됩니다</span>
+    </div>
+
+    <div class="box">
+      <h3>소모품 가격검색 — 업체명을 몰라도 됩니다</h3>
+      <p>
+        <b>품목명이나 품목코드만</b> 넣으시면 됩니다. 업체를 지정하지 않아도 그 품목을
+        <b>언제 · 얼마에 · 어느 업체에서 · 어떤 방법으로</b> 샀는지가 건별로 나옵니다.
+      </p>
+
+      <figure class="shot">
+        <div class="shot__f">
+          <div class="shot__bar"><i></i><i></i><i></i>&nbsp;소모품 가격검색 — price-sand.vercel.app</div>
+          <div class="px">
+            <div class="px__q"><span>와이프올</span><b>검색</b></div>
+            <p class="px__h">업체명은 넣지 않았습니다 — 품목명만으로 찾습니다</p>
+            <table class="px__t">
+              <tr><th>발주일</th><th>품목명</th><th>거래처</th><th>구매업무</th><th class="r">단가</th></tr>
+              <tr><td colspan="5" class="d" style="background:#F8FAF9">Z020017744 · 와이프올 X60 중형 (1BOX) — 발주 14건</td></tr>
+              <tr><td class="d">2026-09-18</td><td>와이프올 X60 중형</td><td>(주)대한과학</td><td><i class="tag bid">입찰</i></td><td class="r">31,900</td></tr>
+              <tr><td class="d">2026-05-07</td><td>와이프올 X60 중형</td><td>한국옵틱스</td><td><i class="tag bid">입찰</i></td><td class="r">32,400</td></tr>
+              <tr><td class="d">2026-02-11</td><td>와이프올 X60 중형</td><td>(주)대한과학</td><td><i class="tag bid">입찰</i></td><td class="r">33,000</td></tr>
+              <tr><td class="d">2025-11-24</td><td>와이프올 X60 중형</td><td>랩포유</td><td><i class="tag bid">입찰</i></td><td class="r">33,000</td></tr>
+            </table>
+          </div>
+        </div>
+        <figcaption>
+          <b>화면 그림</b> — 실제 검색 결과의 꼴입니다. 숫자는 보기를 위한 예시입니다.
+          <b>구매업무 칸</b>이 「전에 어떻게 샀는지」입니다. 여기가 <i class="tag bid">입찰</i> 인 품목을
+          수의로 올리시면 되돌려 드리게 됩니다.
+        </figcaption>
+      </figure>
+
+      <table style="margin-top:16px">
+        <tr><th><i class="tag unit">단가계약</i></th><td><b>품의를 올리지 않습니다.</b> 정해진 단가로 바로 발주됩니다. 전략구매팀에 발주만 요청하세요</td></tr>
+        <tr><th><i class="tag bid">입찰</i></th><td>그대로 <b>입찰구매요청</b>으로 올리세요. 방법을 바꿀 이유가 새로 생긴 것이 아니라면 바꾸지 않습니다</td></tr>
+        <tr><th><i class="tag bid">입찰</i> <i class="tag priv">수의계약</i></th><td>둘 다 있으면 <b>입찰이 우선</b>입니다. 수의로 가려면 그 건에 해당하는 항과 근거가 따로 있어야 합니다</td></tr>
+        <tr><th><i class="tag priv">수의계약</i></th><td>늘 수의로만 사 온 품목입니다. <b>왜 그랬는지(독점 · 지정업체 · 긴급)</b> 를 확인하고 같은 사유를 비고란에 적으세요</td></tr>
+        <tr><th>안 나옴</th><td>처음 사는 품목입니다. <b>입찰이 기본값</b>입니다. 반복해서 쓸 것이면 소모품 등록부터</td></tr>
+      </table>
+
+      <p class="more">
+        찾아보기 — <a href="https://price-sand.vercel.app/" target="_blank" rel="noopener">소모품 가격검색</a> ·
+        <a href="../supplies.html">소모품 구매 이력</a><br>
+        현재 자료 기준으로 품목 <b>4,025종</b> 가운데 <b>수의계약 2,504 · 입찰 2,656</b> 입니다.
+        합이 넘는 것은 <b>한 품목을 두 방법으로 모두 사 왔다</b>는 뜻입니다 — 그래서 품목이 아니라 <b>건마다</b> 따집니다.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── 2. 사례 ───────────────────────────────────── -->
+  <section class="sec">
+    <div class="sec__h">
+      <span class="sec__t">사례별로 보기</span>
+      <span class="sec__d">왼쪽처럼 올라오면 되돌려 드립니다</span>
+    </div>
+
+    <!-- 사례 1 -->
+    <article class="case">
+      <span class="case__n">사례 1 · 오늘도 있었습니다</span>
+      <h2 class="case__t">와이프올을 「10만원 이하」로 수의계약에 올렸습니다</h2>
+      <p class="case__s">와이프올 · 장갑 · 비닐 같은 <b>범용 소모품</b>은 파는 곳이 많습니다.
+        <b>금액이 작다는 것은 수의계약 사유가 아닙니다.</b></p>
+      <div class="ab">
+        <div class="no">
+          <h4><span>✕</span> 이렇게 올라옵니다</h4>
+          <ul>
+            <li><b>소모품 구매</b>(수의) 메뉴로</li>
+            <li>비고란에 <b>「10만원 이하, 1항」</b> 한 줄</li>
+            <li>견적서 한 곳만 붙임</li>
+          </ul>
+        </div>
+        <div class="yes">
+          <h4><span>✓</span> 이렇게 올려 주세요</h4>
+          <ul>
+            <li>가격검색에서 <b>와이프올</b> 을 쳐 봅니다 → <i class="tag bid">입찰</i></li>
+            <li><b>입찰구매요청 ▸ 입찰-소모품</b> 으로</li>
+            <li>한 해 쓸 양을 <b>한 번에</b> 올립니다</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note">
+        <b>1항은 「범용 품목을 수의로 사도 된다」는 조항이 아닙니다.</b>
+        경쟁할 수 있는 품목은 금액과 관계없이 입찰입니다.
+        10만원을 맞추려고 <b>한 건을 나누어 올리는 것</b>은 감사에서 가장 먼저 보는 자리입니다.
+      </div>
+    </article>
+
+    <!-- 사례 2 -->
+    <article class="case">
+      <span class="case__n">사례 2 · 수의가 맞습니다</span>
+      <h2 class="case__t">장비에만 쓰는 소모성 케이블이 끊어졌습니다</h2>
+      <p class="case__s">그 장비 전용 부품은 <b>공급처가 정해져</b> 있습니다 — <b>4항(지정업체)</b> 입니다.
+        같은 공식이 컬럼 · 전극 · 램프 · 전용 지그에도 그대로 들어맞습니다.</p>
+      <div class="ab">
+        <div class="no">
+          <h4><span>✕</span> 비고란이 이러면 반려됩니다</h4>
+          <ul>
+            <li><b>「장비 부품이라서」</b> 한 줄만</li>
+            <li>해당 항을 안 적음</li>
+            <li>제조사 · 모델명이 없음</li>
+          </ul>
+        </div>
+        <div class="yes">
+          <h4><span>✓</span> 이렇게 적어 주세요</h4>
+          <ul>
+            <li><b>어느 장비</b>의 <b>어느 부품</b>인지 (제조사 · 모델명)</li>
+            <li><b>해당 항(4항)</b> 을 숫자로</li>
+            <li>총판 · 대리점이면 <b>확인서</b> 붙임</li>
+          </ul>
+        </div>
+      </div>
+      <div class="quote">
+        <em>비고란에 이렇게 적습니다</em>
+        소모품을 구매하고자 합니다. 비고: 지정업체에서만 구매 및 유지보수가 가능하여 수의계약 진행하고자 합니다.
+        (제15조의2(수의계약에 의한 구매) 4항, 3항, 품질유지기한, 지정된 업체) 붙임 1. 견적서 1부. 끝.
+        <span class="fill">괄호 끝의 품목 자리를 「○○ 장비 전용 케이블」 로 바꾸세요</span>
+      </div>
+    </article>
+
+    <!-- 사례 3 -->
+    <article class="case">
+      <span class="case__n">사례 3 · 모든 부서가 올립니다</span>
+      <h2 class="case__t">명함을 신청하는데 구매구분을 무엇으로 고르나요</h2>
+      <p class="case__s"><b>「인쇄물」</b> 입니다. 소모품이 아닙니다.
+        명함 · 봉투 · 리플릿 · 안내책자가 모두 인쇄물입니다.</p>
+      <div class="ab">
+        <div class="no">
+          <h4><span>✕</span> 이렇게 올라옵니다</h4>
+          <ul>
+            <li>구매구분을 <b>「소모품」</b> 으로</li>
+            <li>비고란에 <b>「10만원 이하」</b></li>
+            <li>견적서를 따로 받아 붙임</li>
+          </ul>
+        </div>
+        <div class="yes">
+          <h4><span>✓</span> 이렇게 올려 주세요</h4>
+          <ul>
+            <li>구매구분 <b>「인쇄물」</b></li>
+            <li>품목은 <b>명함_계약</b> 을 골라서</li>
+            <li><b>통 수</b>만 적으면 됩니다 — 단가는 정해져 있습니다</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note">
+        <b>품목이 두 개로 나뉘어 있습니다.</b> 이름은 둘 다 「명함_계약(보직자, 200장/1통)」인데
+        <b>D040010900 은 20,000원</b>, <b>D040010901 은 6,000원</b> 입니다.
+        어느 쪽인지 헷갈리시면 <b>전략구매팀(내선 8124)</b> 에 물어보고 고르세요 — 고쳐 올리는 것보다 빠릅니다.
+      </div>
+    </article>
+
+    <!-- 사례 4 -->
+    <article class="case">
+      <span class="case__n">사례 4</span>
+      <h2 class="case__t">매달 쓰는 시험소모품을 그때그때 사려고 합니다</h2>
+      <p class="case__s">시험에 늘 들어가는 표준포 · 필터 같은 것을 <b>필요할 때마다</b> 조금씩 올리는 경우입니다.</p>
+      <div class="ab">
+        <div class="no">
+          <h4><span>✕</span></h4>
+          <ul>
+            <li>한 번에 <b>8만원</b>어치씩 끊어 수의로</li>
+            <li>같은 품목이 한 해 열두 번</li>
+          </ul>
+        </div>
+        <div class="yes">
+          <h4><span>✓</span></h4>
+          <ul>
+            <li>품목을 <b>시험소모품으로 등록</b></li>
+            <li><b>입찰-소모품</b> 으로 한 해 쓸 양을 한 번에</li>
+            <li>되풀이되면 <b>단가계약</b> 후보로 알려 주세요</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <!-- 사례 5 -->
+    <article class="case">
+      <span class="case__n">사례 5</span>
+      <h2 class="case__t">이 제품은 그 업체에서만 판다고 합니다</h2>
+      <p class="case__s">독점(5항) · 생산자 1인(6항)은 <b>근거를 붙여야</b> 성립합니다.</p>
+      <div class="ab">
+        <div class="no">
+          <h4><span>✕</span> 근거가 아닌 것</h4>
+          <ul>
+            <li><b>업체가 그렇게 말했습니다</b></li>
+            <li>다른 데를 <b>안 찾아봤습니다</b></li>
+            <li>전에도 거기서 샀습니다</li>
+          </ul>
+        </div>
+        <div class="yes">
+          <h4><span>✓</span> 근거가 되는 것</h4>
+          <ul>
+            <li>제조사의 <b>총판 · 대리점 확인서</b></li>
+            <li>시험규격(KS · ISO)이 <b>그 제품을 지정</b></li>
+            <li>바꾸면 <b>시험 데이터 연속성</b>이 끊긴다는 설명</li>
+          </ul>
+        </div>
+      </div>
+      <div class="quote">
+        <em>비고란에 이렇게 적습니다</em>
+        소모품을 구매하고자 합니다. 비고: 독점적 기술 · 위치 · 구조로 인해 경쟁이 제한되어 수의계약 진행하고자 합니다.
+        (제15조의2(수의계약에 의한 구매) 5항, 6항, <span class="fill">품목명</span>) 붙임 1. 견적서 1부. 끝.
+      </div>
+    </article>
+
+    <!-- 사례 6 -->
+    <article class="case">
+      <span class="case__n">사례 6</span>
+      <h2 class="case__t">입찰에 아무도 안 들어와 일정이 밀립니다</h2>
+      <p class="case__s"><b>2항(1회 이상 유찰)</b> 은 <b>입찰을 먼저 돌려야</b> 생기는 사유입니다. 처음부터 쓸 수 없습니다.</p>
+      <div class="ab">
+        <div class="no">
+          <h4><span>✕</span></h4>
+          <ul>
+            <li>지난번에 유찰됐으니 <b>이번엔 바로 수의로</b></li>
+            <li>구매번호를 안 적음</li>
+          </ul>
+        </div>
+        <div class="yes">
+          <h4><span>✓</span></h4>
+          <ul>
+            <li><b>이 건으로</b> 입찰을 한 번 돌립니다</li>
+            <li>유찰되면 <b>입찰결과를 붙여</b> 수의로 전환</li>
+            <li>비고란에 <b>그 건의 구매번호</b></li>
+          </ul>
+        </div>
+      </div>
+      <div class="quote">
+        <em>비고란에 이렇게 적습니다</em>
+        소모품을 구매하고자 합니다. 비고: 전자입찰하였으나 단독응찰로 유찰되어, 수의계약 진행하고자 합니다
+        (구매번호: <span class="fill">CS__________</span>) 붙임 1. 입찰결과 1부. 2. 견적서 1부. 끝.
+      </div>
+    </article>
+
+    <!-- 사례 7 -->
+    <article class="case">
+      <span class="case__n">사례 7</span>
+      <h2 class="case__t">당장 다음 주 시험에 써야 해서 급합니다</h2>
+      <p class="case__s"><b>3항</b> 은 <b>물건의 성질</b>이 급한 것입니다 — 품질유지기한이 짧은 생물 · 시료 따위.
+        <b>요청이 늦어 급해진 것</b>은 3항이 아닙니다.</p>
+      <div class="ab">
+        <div class="no">
+          <h4><span>✕</span> 3항이 아닙니다</h4>
+          <ul>
+            <li>시험 일정이 코앞이라 급함</li>
+            <li>예산을 연말에 써야 해서 급함</li>
+            <li>재고를 늦게 확인함</li>
+          </ul>
+        </div>
+        <div class="yes">
+          <h4><span>✓</span> 3항입니다</h4>
+          <ul>
+            <li>실험용 쥐(ICR) · 물벼룩 먹이처럼 <b>살아 있는 것</b></li>
+            <li><b>유효기간이 짧은</b> 표준물질 · 배지</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note">
+        일정이 급한 건은 수의계약이 아니라 <b>일찍 올리는 것</b>으로 푸는 문제입니다.
+        <b>재고관리 현황</b>에서 남은 양을 미리 보시면 늦지 않게 올리실 수 있습니다.
+      </div>
+    </article>
+  </section>
+
+  <!-- ── 3. 어디에 올리나 ──────────────────────────── -->
+  <section class="sec">
+    <div class="sec__h">
+      <span class="sec__t">어느 메뉴로 올리나</span>
+      <span class="sec__d">메뉴를 고르는 순간 계약방법이 정해집니다</span>
+    </div>
+
+    <div class="box">
+      <h3>그룹웨어 ▸ 구매관리 ▸ 구매업무</h3>
+      <p>
+        메뉴 이름은 <b>어느 결재선으로 올리느냐</b>입니다. 그리고 <b>입찰 메뉴가 아닌 것은 전부 수의계약</b>으로 집계됩니다 —
+        그래서 메뉴를 잘못 고르면 사유 없는 수의계약 건이 하나 늘어납니다.
+      </p>
+
+      <div class="note" style="margin-top:0">
+        <b>「구매구분」과 「구매업무」는 다른 칸입니다.</b>
+        <b>구매구분</b>은 <b>무엇을 사느냐</b>(소모품 · 시약 · 가스 · <b>인쇄물</b> · 공기구비품 다섯 가지),
+        <b>구매업무</b>는 <b>어느 결재선으로 올리느냐</b>입니다. 둘을 따로 고르셔야 합니다 —
+        <b>명함은 구매구분 「인쇄물」</b> 이고, 메뉴는 전략구매팀이 쓰는 결재선으로 갑니다.
+      </div>
+
+      <figure class="shot">
+        <div class="shot__f">
+          <div class="shot__bar"><i></i><i></i><i></i>&nbsp;그룹웨어 — 구매업무</div>
+          <div class="gw">
+            <div class="gw__l">구매업무</div>
+            <div class="gw__sel">
+              <div class="gw__o on">전체</div>
+              <div class="gw__o">입찰구매요청 <u class="bid">입찰</u></div>
+              <div class="gw__o">소모품 구매 <u class="priv">수의</u></div>
+              <div class="gw__o">일반구매요청 <u class="priv">수의</u></div>
+              <div class="gw__o">구매협조요청 <u class="priv">수의</u></div>
+              <div class="gw__o">시험기기수리/개조 <u class="priv">수의</u></div>
+              <div class="gw__o">(사업비)구매협조요청 <u class="priv">수의</u></div>
+              <div class="gw__o">(사업비)소모품 구매 <u class="priv">수의</u></div>
+              <div class="gw__o">건설중인자산 <u class="etc">자산</u></div>
+              <div class="gw__o soon">인쇄물 구매 · 시험보조기구 <u class="etc">예정</u></div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <b>화면 그림</b> — 오른쪽 꼬리표(입찰 · 수의 · 자산)는 실제 화면에는 없습니다.
+          어느 메뉴가 어느 계약방법으로 잡히는지 보여 드리려고 <b>여기에만</b> 붙였습니다.
+          <b>인쇄물 구매 · 시험보조기구</b>는 내년부터 소모품구매에 들어올 예정이라 흐리게 두었습니다.
+        </figcaption>
+      </figure>
+
+      <table style="margin-top:16px">
+        <tr><th>입찰구매요청</th><td>소모품 · 일반 · 사업비 <b>세 유형 모두 이 메뉴 하나</b>로 올립니다. 씨마켓 공고 → 투찰 → 낙찰</td></tr>
+        <tr><th>소모품 구매</th><td>등록된 시험소모품을 <b>수의 사유에 해당해</b> 경쟁 없이 살 때</td></tr>
+        <tr><th>(일반/협조)구매요청</th><td><b>1회성 · 단건</b> — 책상 · 의자 · PC류</td></tr>
+        <tr><th>시험기기수리 / 개조</th><td>쓰던 시험기기의 <b>수리 · 개조</b>. 제조사 엔지니어 출장비가 드는 건</td></tr>
+        <tr><th>(사업비)…</th><td>연구사업 · 과제 · 용역 예산으로 집행되는 건. 계약방법 판정은 앞 메뉴와 같습니다</td></tr>
+      </table>
+
+      <p class="more">
+        <b>수의계약 허용 사유 1 ~ 6항 전문</b>과 <b>공문 비고란 문구 5종</b>은 포털 지침 탭에 그대로 실려 있습니다 —
+        <a href="../">수요부서 포털 ▸ 지침 · 요령 ▸ 수의계약</a><br>
+        근거 — <b>4-1-4 「구매 및 계약 업무요령」</b> 최종개정 <b>2025.04.30.</b> ·
+        <a href="https://intern-study.vercel.app/docs/4-1-4_구매및계약_업무요령_20250430.pdf" target="_blank" rel="noopener">원문 (PDF)</a> ·
+        <a href="https://intern-study.vercel.app/docs/구매유형_한눈에.html" target="_blank" rel="noopener">구매유형 한눈에</a> ·
+        <a href="https://intern-study.vercel.app/docs/지침_찾아보기.html" target="_blank" rel="noopener">지침 찾아보기</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ── 4. 한 줄 요약 ─────────────────────────────── -->
+  <section class="sec">
+    <div class="sec__h"><span class="sec__t">요약</span></div>
+    <div class="box">
+      <table>
+        <tr><th>순서</th><td><b>품목이 무엇이냐</b> → 공식 표에서 찾기 → 없으면 가격검색 → 그래도 없으면 <b>입찰</b></td></tr>
+        <tr><th>명함</th><td>구매구분은 <b>「인쇄물」</b> 입니다. 소모품으로 고르지 마세요 — 봉투 · 리플릿도 같습니다</td></tr>
+        <tr><th>검색</th><td>가격검색은 <b>품목명만</b> 넣으면 됩니다. 업체를 지정하지 않아도 <b>언제 · 어떻게</b> 샀는지 나옵니다</td></tr>
+        <tr><th>금액</th><td><b>10만원은 사유가 아닙니다.</b> 경쟁할 수 있는 품목은 금액과 관계없이 입찰입니다</td></tr>
+        <tr><th>쪼개지 않기</th><td>한 건을 나누어 10만원 이하로 맞추는 것은 사유가 되지 않습니다</td></tr>
+        <tr><th>시약</th><td>금액과 관계없이 <b>입찰</b></td></tr>
+        <tr><th>적는 것</th><td>수의로 가야 한다면 비고란에 <b>해당 항(숫자) + 사유 + 붙임</b> 을 빠뜨리지 마세요</td></tr>
+      </table>
+      <p class="more">막히시면 <b>전략구매팀 내선 8124</b> 로 먼저 물어보셔도 됩니다. 되돌아가는 것보다 빠릅니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span><b>(재)FITI시험연구원</b> 사업지원본부 · 전략구매팀</span>
+    <span class="dot">·</span><span>사례별 구매 올리기 v1.0</span>
+    <span class="dot">·</span><span>문의 : 전략구매팀 (내선 8124)</span>
+  </footer>
+
+</div>
+</body>
+</html>

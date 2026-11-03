@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>수요부서 구매현황 · FITI 전략구매팀</title>
+<style>
+:root{
+  --bg:#f5f6f8; --panel:#fff; --line:#e3e6ec; --text:#1c2030; --muted:#6b7280;
+  --accent:#1565C0; --accent-2:#0D47A1; --soft:#eef4ff;
+  --ok:#0f9d58; --warn:#b45309; --warn-bg:#fef3c7; --danger:#e2483d;
+  --radius:12px; --shadow:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  font-size:14px;line-height:1.6;word-break:keep-all}
+.wrap{max-width:1180px;margin:0 auto;padding:0 18px 50px}
+.hidden{display:none!important}
+
+/* 헤더 — 다른 앱과 같은 형식 */
+header{position:sticky;top:0;z-index:20;background:var(--panel);border-bottom:1px solid var(--line)}
+.htop{max-width:1180px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:12px}
+.brand-txt{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.brand-name{font-size:16.5px;font-weight:800}
+.brand-sub{font-size:11px;font-weight:600;color:var(--muted);margin-top:3px}
+.spacer{flex:1}
+.btn{padding:7px 13px;border:1px solid var(--line);background:var(--panel);border-radius:9px;cursor:pointer;
+  font-weight:700;font-size:12.5px;text-decoration:none;color:inherit;display:inline-block;white-space:nowrap}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{opacity:.92;color:#fff}
+
+/* 로그인 */
+.login{min-height:78vh;display:grid;place-items:center;padding:24px}
+.login-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;
+  padding:34px 30px;width:min(430px,94vw);box-shadow:0 12px 40px rgba(16,24,40,.08)}
+.login-card h1{font-size:21px;margin:0 0 6px}
+.login-card .desc{font-size:13px;color:var(--muted);margin:0 0 22px}
+label{display:block;font-size:12.5px;font-weight:700;margin:14px 0 6px;color:var(--text)}
+select,input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;
+  background:var(--bg);font:inherit;color:inherit}
+select:focus,input:focus{outline:none;border-color:var(--accent)}
+.login-card .btn{width:100%;margin-top:20px;padding:13px;font-size:15px}
+.login-card .btn:disabled{opacity:.6;cursor:default}
+/* 부서 아이디 — 「내 아이디가 뭐더라」로 멈추지 않게 */
+.deptids{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.deptids summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--accent);list-style:none}
+.deptids summary::-webkit-details-marker{display:none}
+.deptids summary::before{content:'▸ ';font-size:11px}
+.deptids[open] summary::before{content:'▾ '}
+.deptids input{width:100%;margin:10px 0 6px;padding:7px 10px;border:1px solid var(--line);
+  border-radius:8px;background:var(--panel);color:var(--text);font:inherit;font-size:12.5px}
+.deptids input:focus{outline:none;border-color:var(--accent)}
+.deptids ul{list-style:none;margin:0;padding:0;max-height:190px;overflow:auto;
+  border:1px solid var(--line);border-radius:8px}
+.deptids li{display:flex;gap:10px;align-items:baseline;padding:5px 10px;font-size:12.5px;
+  border-bottom:1px solid var(--line)}
+.deptids li:last-child{border-bottom:none}
+.deptids li b{min-width:38px;font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--accent)}
+.deptids li span{color:var(--muted)}
+.deptids li.off{display:none}
+.didnote{margin:8px 0 0;font-size:11.5px;line-height:1.55;color:var(--muted)}
+/* 검수사진 앱 안내 */
+.appsteps{margin:0 0 16px;padding-left:20px;font-size:13px;line-height:1.75;color:var(--text)}
+.appsteps li{margin-bottom:5px}
+.appsteps code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;
+  background:var(--line);border-radius:4px;padding:1px 5px}
+.shots{display:flex;gap:14px;flex-wrap:wrap}
+.shots a{display:flex;flex-direction:column;gap:6px;text-decoration:none;color:var(--muted);
+  font-size:11.5px;font-weight:600}
+/* í° ì¤í¬ë¦°ì·ì´ë¼ ì¸ë¡ê° ì ê°ê°(2093px Â· 3435px)ìëë¤. ëì´ë¥¼ ë§ì¶° ìë¶ë¶ë§ ë³´ì´ê² ëê³ ,
+   ëë¥´ë©´ ìë³¸ì´ ì´ë¦½ëë¤. ì ë§ì¶ë©´ í ì¥ë§ ë ë°°ë¡ ê¸¸ì´ì ¸ ì¤ì´ ë¬´ëì§ëë¤. */
+.shots img{width:190px;max-width:44vw;height:250px;object-fit:cover;object-position:top center;
+  border:1px solid var(--line);border-radius:10px;background:var(--panel);display:block}
+.shots a:hover img{border-color:var(--accent)}
+.manlink{font-weight:700;color:var(--accent);text-decoration:none;margin-right:6px}
+.manlink:hover{text-decoration:underline}
+.note{font-size:11.5px;color:var(--muted);margin-top:16px;line-height:1.65}
+.pw{position:relative}
+.pw input{padding-right:58px}
+.pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;
+  font:inherit;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;padding:6px 8px}
+.err{display:none;margin-top:14px;padding:10px 12px;border-radius:9px;background:#fdecea;color:var(--danger);
+  font-size:12.5px;font-weight:700}
+.err.show{display:block}
+#deptPick{width:auto;min-width:150px;padding:6px 9px;font-size:12.5px}
+.tag-ok{background:#e8f5e9;color:var(--ok)}
+
+/* 카드 */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+@media(max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:15px 16px;box-shadow:var(--shadow)}
+.kpi__k{font-size:11.5px;font-weight:800;color:var(--muted);letter-spacing:.02em}
+.kpi__v{font-size:23px;font-weight:900;letter-spacing:-.03em;margin-top:5px;
+  font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.kpi__s{font-size:11.5px;color:var(--muted);margin-top:3px}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 18px;margin-bottom:16px;box-shadow:var(--shadow)}
+.panel h2{font-size:15px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.panel h2 span.bar{width:4px;height:16px;border-radius:2px;background:var(--accent)}
+
+/* 바로가기 */
+.links{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.link{display:flex;flex-direction:column;gap:3px;padding:13px 15px;border:1px solid var(--line);
+  border-radius:11px;text-decoration:none;color:inherit;background:var(--bg);transition:.15s}
+.link:hover{border-color:var(--accent);background:var(--soft)}
+.link b{font-size:13.5px}
+.link span{font-size:11.5px;color:var(--muted)}
+
+/* 표 */
+.tablebox{overflow:auto;max-height:560px;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{position:sticky;top:0;background:var(--soft);font-size:11.5px;font-weight:800;color:var(--muted);z-index:2}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+td.item{white-space:normal;min-width:230px}
+tbody tr:hover{background:var(--soft)}
+.pill{display:inline-block;padding:1px 8px;border-radius:99px;font-size:10.5px;font-weight:800;
+  background:var(--soft);color:var(--accent-2)}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+
+.bars{display:flex;flex-direction:column;gap:7px}
+.bar-row{display:grid;grid-template-columns:110px 1fr 110px;align-items:center;gap:10px;font-size:12px}
+.bar-bg{height:9px;background:var(--bg);border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;background:var(--accent);border-radius:99px}
+.bar-row b{text-align:right;font-variant-numeric:tabular-nums}
+
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.toolbar select,.toolbar input{width:auto;min-width:130px;padding:8px 10px;font-size:12.5px}
+.toolbar .grow{flex:1;min-width:190px}
+
+footer{max-width:1180px;margin:26px auto 0;padding:14px 18px 0;border-top:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:8px;font-size:11px;color:var(--muted)}
+footer b{color:var(--text)}
+@media(max-width:560px){ .brand-sub{display:none} .kpi__v{font-size:19px} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="htop">
+    <span class="brand-txt">
+      <span class="brand-name">수요부서 구매현황</span>
+      <span class="brand-sub">사업지원본부 · 전략구매팀 · v1.1</span>
+    </span>
+    <span class="spacer"></span>
+    <select id="deptPick" class="hidden" title="부서 선택 (전략구매팀 전용)"></select>
+    <span id="who" class="brand-sub hidden"></span>
+    <button class="btn hidden" id="logout" type="button">로그아웃</button>
+  </div>
+</header>
+
+<!-- ── 로그인 ── -->
+<section id="login" class="login">
+  <div class="login-card">
+    <h1>우리 부서 구매현황</h1>
+    <p class="desc"><b>GRFITI 계정</b>으로 로그인하면 <b>내 부서 건만</b> 보입니다.</p>
+
+    <form id="loginForm" autocomplete="on">
+      <label for="uid">아이디</label>
+      <input id="uid" name="username" placeholder="예) AG" autocomplete="username" autocapitalize="off" spellcheck="false">
+
+      <label for="upw">비밀번호</label>
+      <div class="pw">
+        <input id="upw" name="password" type="password" autocomplete="current-password">
+        <button type="button" id="pwEye" aria-label="비밀번호 보기">보기</button>
+      </div>
+
+      <button class="btn primary" id="enter" type="submit">로그인</button>
+    </form>
+    <div class="err" id="loginErr"></div>
+
+    <p class="note" id="loginNote">
+      검수사진 앱 · GRFITI 와 <b>같은 아이디·비밀번호</b>입니다.
+      비밀번호를 모르면 전략구매팀(내선 8124)에 문의하세요.
+    </p>
+
+    <!-- 아이디는 부서 코드입니다. 「내 아이디가 뭐더라」를 여기서 끝내려고 둡니다.
+         전체 목록은 GRFITI 관리자에 있고, 여기엔 자주 쓰는 것만 담았습니다. -->
+    <details class="deptids">
+      <summary>부서 아이디 찾기</summary>
+      <input type="search" id="didq" placeholder="부서명으로 찾기 (예: 재무)" autocomplete="off">
+      <ul id="didlist">
+        <li><b>AZ</b><span>임원실</span></li>
+        <li><b>AG</b><span>전략구매팀</span></li>
+        <li><b>AA</b><span>감사실</span></li>
+        <li><b>ATF</b><span>미래성장전략TF팀</span></li>
+        <li><b>AH</b><span>사업지원본부</span></li>
+        <li><b>AS</b><span>안전보건팀</span></li>
+        <li><b>AE</b><span>오창분원지원팀</span></li>
+        <li><b>AAA</b><span>경영기획본부</span></li>
+        <li><b>AB</b><span>인재경영팀</span></li>
+        <li><b>AD</b><span>재무회계팀</span></li>
+        <li><b>AJ</b><span>기획홍보팀</span></li>
+        <li><b>AI</b><span>전산정보팀</span></li>
+        <li><b>DD</b><span>산업육성지원센터</span></li>
+        <li><b>BA</b><span>섬유소비재본부</span></li>
+        <li><b>BB</b><span>섬유소비재팀</span></li>
+        <li><b>BC</b><span>섬유소비재지원팀</span></li>
+        <li><b>BE</b><span>제품평가팀</span></li>
+        <li><b>BF</b><span>공공사업팀</span></li>
+        <li><b>CC</b><span>섬유소재평가팀</span></li>
+        <li><b>MF</b><span>베트남호치민지사</span></li>
+        <li><b>MG</b><span>베트남하노이사무소</span></li>
+        <li><b>MH</b><span>인도네시아자카르타사무소</span></li>
+        <li><b>MI</b><span>미국LA사무소</span></li>
+        <li><b>MJ</b><span>미국뉴욕사무소</span></li>
+        <li><b>NA</b><span>충주시험인증센터</span></li>
+        <li><b>OA</b><span>순환경제혁신지원TF</span></li>
+      </ul>
+      <p class="didnote">
+        자주 쓰는 것만 담았습니다. 여기 없으면 <b>검수사진 앱에 쓰시는 그 아이디</b>가 맞습니다 —
+        모르시면 전략구매팀(내선 8124).
+      </p>
+    </details>
+  </div>
+</section>
+
+<!-- ── 본문 ── -->
+<main id="app" class="wrap hidden">
+
+  <div class="toolbar" style="margin-top:18px">
+    <select id="yearSel"><option value="">전체 연도</option></select>
+    <select id="catSel"><option value="">전체 분류</option></select>
+    <input class="grow" id="q" placeholder="품목명 · 품목코드 검색">
+    <button class="btn" id="csv" type="button">CSV 내려받기</button>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="kpi__k">발주 건수</div><div class="kpi__v" id="k-count">—</div><div class="kpi__s" id="k-count-s">—</div></div>
+    <div class="kpi"><div class="kpi__k">발주 금액</div><div class="kpi__v" id="k-amt">—</div><div class="kpi__s">현재 조건 합계</div></div>
+    <div class="kpi"><div class="kpi__k">거래 품목 수</div><div class="kpi__v" id="k-sku">—</div><div class="kpi__s">품목코드 기준</div></div>
+    <div class="kpi"><div class="kpi__k">최근 발주일</div><div class="kpi__v" id="k-last">—</div><div class="kpi__s" id="k-last-s">—</div></div>
+  </div>
+
+  <div class="panel">
+    <h2><span class="bar"></span> 검수 대기 <span id="pendCount" class="pill"></span>
+      <span style="font-weight:600;font-size:11.5px;color:var(--muted)">발주는 됐고 아직 입고(검수) 전 · GRFITI 기준</span></h2>
+    <div class="tablebox" style="max-height:340px">
+      <table>
+        <thead><tr><th>구매번호</th><th>요청자</th><th class="col-title">건명</th><th class="n">금액</th></tr></thead>
+        <tbody id="pendBody"><tr><td class="empty" colspan="4">불러오는 중…</td></tr></tbody>
+      </table>
+    </div>
+    <p class="note" style="margin-top:10px">물건을 받았으면 <b>검수사진 앱</b>으로 이 구매번호를 골라 사진을 찍어 주세요.</p>
+  </div>
+
+  <!-- 검수사진 앱 — 검수 대기 바로 밑입니다 — 「이 구매번호를 골라 사진을 찍어 주세요」 다음에
+       「그래서 앱은 어떻게 까나」가 바로 이어지도록. APK 는 여기서 주지 않습니다(49MB · 전략구매팀이 직접 전달). 설치·설정 방법만 보여 줍니다. -->
+  <div class="panel">
+    <h2><span class="bar"></span> 검수사진 앱
+      <span style="font-weight:600;font-size:11.5px;color:var(--muted)">안드로이드 설치와 처음 설정</span></h2>
+
+    <p class="note" style="margin:0 0 14px">
+      물건을 받으면 이 앱으로 <b>위 구매번호를 골라 사진을 찍습니다.</b>
+      사진은 파일서버에 자동으로 올라가 검수조서에 붙습니다.
+      <b>설치 파일(GRfiti.apk)은 전략구매팀이 보내 드립니다</b> — 내선 8124.
+    </p>
+
+    <ol class="appsteps">
+      <li><b>설치</b> — 받은 <code>GRfiti.apk</code> 를 누르고,
+        「출처를 알 수 없는 앱」을 <b>허용</b>합니다. 갤럭시는 <b>자동 차단 해제</b>도 필요합니다.</li>
+      <li><b>처음 설정</b> — 권한을 허용하고 <b>파일서버 계정</b>과 <b>저장 폴더</b>를 한 번 지정합니다.</li>
+      <li><b>로그인</b> — <b>이 화면과 같은 아이디·비밀번호</b>입니다. 그다음 구매건을 골라 촬영하면 끝입니다.</li>
+    </ol>
+
+    <div class="shots">
+      <a href="app/화면_홈아이콘.jpg" target="_blank" rel="noopener">
+        <img src="app/화면_홈아이콘.jpg" alt="홈 화면의 앱 아이콘" loading="lazy">
+        <span>① 설치 후 홈 화면</span>
+      </a>
+      <a href="app/화면_설정.jpg" target="_blank" rel="noopener">
+        <img src="app/화면_설정.jpg" alt="파일서버 계정 설정 화면" loading="lazy">
+        <span>② 파일서버 계정</span>
+      </a>
+      <a href="app/화면_폴더선택.jpg" target="_blank" rel="noopener">
+        <img src="app/화면_폴더선택.jpg" alt="저장 폴더 선택 화면" loading="lazy">
+        <span>③ 저장 폴더 선택</span>
+      </a>
+    </div>
+
+    <p class="note" style="margin-top:14px">
+      <a class="manlink" href="app/검수사진앱_매뉴얼.html" target="_blank" rel="noopener">
+        전체 매뉴얼 열기 &rarr;</a>
+      설치 · 설정 · 로그인 · 촬영 · 저장 위치까지 9장. 아이폰은 별도 안내입니다.
+    </p>
+  </div>
+
+  <div class="panel">
+    <h2><span class="bar"></span> 분류별 집행</h2>
+    <div class="bars" id="catBars"></div>
+  </div>
+
+  <div class="panel">
+    <h2><span class="bar"></span> 구매 바로가기</h2>
+    <div class="links">
+      <a class="link" href="https://www.c-market.net/" target="_blank" rel="noopener">
+        <b>씨마켓 ↗</b><span>전자구매시스템 — 입찰 공고·투찰 확인</span></a>
+      <a class="link" href="https://c-mro.com/" target="_blank" rel="noopener">
+        <b>C-MRO 몰 ↗</b><span>소모성 자재 구매 몰</span></a>
+      <a class="link" href="https://price-sand.vercel.app/" target="_blank" rel="noopener">
+        <b>소모품 가격검색 ↗</b><span>사기 전에 단가부터 확인</span></a>
+      <a class="link" href="https://gw.fiti.re.kr/#/DT/CDTS5108/CDTS5108" target="_blank" rel="noopener">
+        <b>소모품 구매요청 ↗</b><span>아마란스 · 구매관리시스템</span></a>
+      <a class="link" href="https://gw.fiti.re.kr/#/DT/CDTS5121/CDTS5121" target="_blank" rel="noopener">
+        <b>입찰구매요청 ↗</b><span>아마란스 · 구매관리시스템</span></a>
+      <a class="link" href="https://intern-study.vercel.app/" target="_blank" rel="noopener">
+        <b>업무 매뉴얼 ↗</b><span>구매 절차와 필요 서류</span></a>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2><span class="bar"></span> 발주 내역 <span id="rowCount" class="pill"></span></h2>
+    <div class="tablebox">
+      <table>
+        <thead><tr>
+          <th>발주일자</th><th>분류</th><th>계약구분</th><th>품목명</th>
+          <th class="n">수량</th><th class="n">단가</th><th class="n">금액</th>
+        </tr></thead>
+        <tbody id="tbody"><tr><td class="empty" colspan="7">불러오는 중…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+
+</main>
+
+<footer>
+  <span><b>(재)FITI시험연구원</b> 사업지원본부 · 전략구매팀</span>
+  <span style="opacity:.5">·</span><span>수요부서 구매현황 v1.1</span>
+  <span style="opacity:.5">·</span><span>문의 : 전략구매팀 (내선 8124)</span>
+</footer>
+
+<script>
+'use strict';
+const $ = (s) => document.querySelector(s);
+const fmt = (n) => (Number(n) || 0).toLocaleString('ko-KR');
+const esc = (s) => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+/* 로그인 세션 — 검수사진 앱처럼 브라우저를 닫아도 남고, 만료 전에 자동 연장합니다.
+   비밀번호는 저장하지 않습니다(토큰만). */
+const LS_SESSION = 'fiti.dept.session';
+const REFRESH_MARGIN = 5 * 60 * 1000;
+
+let session = null;
+let state = { dept:'', rows:[], byCategory:{}, savedAt:'', lastDate:'', blobError:'', yearsLoaded:false };
+
+function saveSession(s){
+  session = s;
+  try { s ? localStorage.setItem(LS_SESSION, JSON.stringify(s)) : localStorage.removeItem(LS_SESSION); } catch (e) {}
+}
+function readSession(){
+  try { return JSON.parse(localStorage.getItem(LS_SESSION) || 'null'); } catch (e) { return null; }
+}
+
+async function postAuth(body, token){
+  const r = await fetch('/api/auth', {
+    method:'POST', cache:'no-store',
+    headers: Object.assign({ 'Content-Type':'application/json' }, token ? { Authorization:'Bearer ' + token } : {}),
+    body: JSON.stringify(body)
+  });
+  let j = null;
+  try { j = await r.json(); } catch (e) { j = null; }
+  return { status: r.status, j };
+}
+
+async function ensureSession(){
+  if (!session) return false;
+  if (session.expires_at - Date.now() > REFRESH_MARGIN) return true;
+  try {
+    const { j } = await postAuth({ action:'refresh', refresh_token: session.refresh_token });
+    if (j && j.success) { saveSession(j); return true; }
+  } catch (e) {}
+  saveSession(null);
+  return false;
+}
+
+/* ── 로그인 ─────────────────────────────────────────────── */
+function showErr(msg){
+  const el = $('#loginErr');
+  el.textContent = msg || '';
+  el.classList.toggle('show', !!msg);
+}
+
+async function login(e){
+  if (e) e.preventDefault();
+  const username = $('#uid').value.trim();
+  const password = $('#upw').value;
+  if (!username || !password) return showErr('아이디와 비밀번호를 입력해 주세요.');
+
+  showErr('');
+  const btn = $('#enter');
+  btn.disabled = true; btn.textContent = '로그인 중…';
+  try {
+    const { j } = await postAuth({ action:'login', username, password });
+    if (!j || !j.success) return showErr((j && j.message) || '로그인에 실패했습니다.');
+    $('#upw').value = '';
+    saveSession(j);
+    enterApp();
+  } catch (err) {
+    // 파일을 그냥 열었거나(file://) 아직 배포 전이면 /api/auth 가 없습니다.
+    showErr('서버에 닿지 않습니다. 이 화면은 Vercel 에 올라가야 동작합니다.');
+  } finally {
+    btn.disabled = false; btn.textContent = '로그인';
+  }
+}
+
+function enterApp(){
+  state.dept = session.dept;
+  $('#login').classList.add('hidden');
+  $('#app').classList.remove('hidden');
+  $('#who').textContent = (session.name ? session.name + ' · ' : '') + session.dept;
+  $('#who').classList.remove('hidden');
+  $('#logout').classList.remove('hidden');
+  load();
+}
+
+async function logout(){
+  const token = session && session.access_token;
+  saveSession(null);
+  try { if (token) await postAuth({ action:'logout' }, token); } catch (e) {}
+  location.reload();
+}
+
+function backToLogin(msg){
+  saveSession(null);
+  $('#app').classList.add('hidden');
+  $('#login').classList.remove('hidden');
+  $('#who').classList.add('hidden');
+  $('#logout').classList.add('hidden');
+  $('#deptPick').classList.add('hidden');
+  showErr(msg || '');
+}
+
+/* ── 조회 ───────────────────────────────────────────────── */
+async function load(){
+  if (!(await ensureSession())) return backToLogin('로그인이 만료되었습니다. 다시 로그인해 주세요.');
+
+  const year = $('#yearSel').value;
+  const pick = $('#deptPick').value;
+  const qs = [];
+  if (year) qs.push('year=' + encodeURIComponent(year));
+  if (session.isAdmin && pick) qs.push('dept=' + encodeURIComponent(pick));
+  const url = '/api/dept' + (qs.length ? '?' + qs.join('&') : '');
+
+  $('#tbody').innerHTML = '<tr><td class="empty" colspan="7">불러오는 중…</td></tr>';
+  $('#pendBody').innerHTML = '<tr><td class="empty" colspan="4">불러오는 중…</td></tr>';
+  try {
+    const ac = new AbortController();
+    const bell = setTimeout(() => ac.abort(), 20000);   // 서버가 끝내 대답 안 하면 화면이 갇힙니다
+    let r;
+    try {
+      r = await fetch(url, { cache:'no-store', signal: ac.signal,
+                             headers:{ Authorization:'Bearer ' + session.access_token } });
+    } finally { clearTimeout(bell); }
+    if (r.status === 401) return backToLogin('로그인이 만료되었습니다. 다시 로그인해 주세요.');
+    const j = await r.json();
+    if (!j.success) throw new Error(j.message || '조회 실패');
+
+    state.dept = j.dept || session.dept;
+
+    // 연도 선택칸 — 처음 한 번만 채웁니다.
+    if (!state.yearsLoaded) {
+      const ySel = $('#yearSel');
+      (j.years || []).forEach(y => {
+        const o = document.createElement('option'); o.value = y; o.textContent = y + '년';
+        ySel.appendChild(o);
+      });
+      state.yearsLoaded = true;
+    }
+
+    // 전략구매팀만 부서를 골라 볼 수 있습니다(서버도 같은 규칙으로 막습니다).
+    const dp = $('#deptPick');
+    if (session.isAdmin && (j.depts || []).length && !dp.options.length) {
+      dp.innerHTML = `<option value="">내 부서 (${esc(session.dept)})</option>`
+        + j.depts.map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('');
+      dp.classList.remove('hidden');
+    }
+
+    renderPending(j.pending || {});
+
+    state.rows = j.rows || [];
+    state.byCategory = j.byCategory || {};
+    state.savedAt = j.savedAt || '';
+    state.blobError = j.blobError || '';
+    state.lastDate = j.lastDate || '';
+
+    // 분류 선택칸은 우리 부서에 실제로 있는 값만 채웁니다.
+    const cSel = $('#catSel');
+    const cur = cSel.value;
+    const cats = Object.keys(state.byCategory).sort();
+    cSel.innerHTML = '<option value="">전체 분류</option>'
+      + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+    if (cats.includes(cur)) cSel.value = cur;
+
+    render();
+  } catch (e) {
+    const slow = e && e.name === 'AbortError';
+    const msg = slow ? '서버가 응답하지 않습니다. 잠시 뒤 다시 시도해 주세요.'
+                     : '불러오지 못했습니다. 잠시 뒤 다시 시도해 주세요.';
+    $('#tbody').innerHTML = '<tr><td class="empty" colspan="7">' + msg + '</td></tr>';
+    $('#pendBody').innerHTML = '<tr><td class="empty" colspan="4">' + msg + '</td></tr>';
+  }
+}
+
+function renderPending(p){
+  const rows = p.rows || [];
+  $('#pendCount').textContent = p.ok ? fmt(rows.length) + '건' : '';
+  if (!p.ok) {
+    $('#pendBody').innerHTML = '<tr><td class="empty" colspan="4">GRFITI 검수 대기 목록을 불러오지 못했습니다.</td></tr>';
+    return;
+  }
+  // GRFITI 에 건명 칸이 없으면 그 열을 숨깁니다.
+  const hasTitle = rows.some(r => r.title || r.item_name);
+  document.querySelectorAll('.col-title').forEach(el => el.classList.toggle('hidden', !hasTitle));
+  $('#pendBody').innerHTML = rows.length
+    ? rows.map(r => `
+        <tr>
+          <td><b>${esc(r.doc_no || '-')}</b></td>
+          <td>${esc(r.applicant_name || '-')}</td>
+          <td class="item col-title${hasTitle ? '' : ' hidden'}">${esc(r.title || r.item_name || '')}</td>
+          <td class="n">${r.amount != null ? fmt(r.amount) : '-'}</td>
+        </tr>`).join('')
+    : '<tr><td class="empty" colspan="4"><span class="pill tag-ok">검수 대기 없음</span></td></tr>';
+}
+
+function visibleRows(){
+  const cat = $('#catSel').value;
+  const q = $('#q').value.trim().toLowerCase();
+  return state.rows.filter(r => {
+    if (cat && String(r.category || '') !== cat) return false;
+    if (!q) return true;
+    return String(r.item || '').toLowerCase().includes(q)
+        || String(r.itemCode || '').toLowerCase().includes(q);
+  });
+}
+
+function render(){
+  const rows = visibleRows();
+
+  const amt = rows.reduce((a, r) => a + (Number(r.amt) || 0), 0);
+  // 품목코드가 비었거나 '00' 인 건은 서로 다른 품목이라 이름으로 셉니다.
+  const sku = new Set(rows.map(r => {
+    const c = String(r.itemCode || '').trim();
+    return (c && c !== '00') ? 'C:' + c : 'N:' + String(r.item || '').trim();
+  }).filter(k => k !== 'N:'));
+
+  $('#k-count').textContent = fmt(rows.length);
+  $('#k-count-s').textContent = state.savedAt ? ('자료 기준 ' + state.savedAt.slice(0, 10)) : '현재 조건';
+  $('#k-amt').textContent = fmt(amt);
+  $('#k-sku').textContent = fmt(sku.size);
+
+  const last = rows.reduce((m, r) => (String(r.date || '') > m ? String(r.date) : m), '');
+  $('#k-last').textContent = last ? last.replace(/-/g, '.') : '—';
+  if (last) {
+    const diff = Math.round((Date.now() - new Date(last + 'T00:00:00')) / 86400000);
+    $('#k-last-s').textContent = diff <= 0 ? '오늘' : diff + '일 전';
+  } else $('#k-last-s').textContent = '—';
+
+  // 분류별 막대 — 보이는 행 기준으로 다시 셉니다.
+  const byCat = {};
+  rows.forEach(r => {
+    const c = String(r.category || '미분류');
+    byCat[c] = (byCat[c] || 0) + (Number(r.amt) || 0);
+  });
+  const entries = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
+  const max = entries.length ? entries[0][1] : 0;
+  $('#catBars').innerHTML = entries.length
+    ? entries.map(([c, v]) => `
+        <div class="bar-row">
+          <span>${esc(c)}</span>
+          <span class="bar-bg"><span class="bar-fill" style="width:${max ? (v / max * 100).toFixed(1) : 0}%"></span></span>
+          <b>${fmt(v)}원</b>
+        </div>`).join('')
+    : '<p class="empty">표시할 내역이 없습니다.</p>';
+
+  $('#rowCount').textContent = fmt(rows.length) + '건';
+  $('#tbody').innerHTML = rows.length
+    ? rows.slice(0, 500).map(r => `
+        <tr>
+          <td>${esc(String(r.date || '').replace(/-/g, '.'))}</td>
+          <td><span class="pill">${esc(r.category || '-')}</span></td>
+          <td>${esc(r.procurementType || '-')}</td>
+          <td class="item">${esc(r.item || '-')}<br><span style="color:var(--muted);font-size:11px">${esc(r.itemCode || '')}</span></td>
+          <td class="n">${fmt(r.qty)}</td>
+          <td class="n">${fmt(r.unitPrice)}</td>
+          <td class="n"><b>${fmt(r.amt)}</b></td>
+        </tr>`).join('')
+      + (rows.length > 500 ? `<tr><td class="empty" colspan="7">최근 500건만 표시했습니다. 전체는 CSV 로 받으세요 (총 ${fmt(rows.length)}건).</td></tr>` : '')
+    : ('<tr><td class="empty" colspan="7">'
+        + (state.blobError
+            ? '구매 데이터를 읽지 못했습니다 — ' + esc(state.blobError)
+            : '해당하는 발주 내역이 없습니다.')
+        + '</td></tr>');
+}
+
+function downloadCsv(){
+  const rows = visibleRows();
+  if (!rows.length) return alert('내려받을 내역이 없습니다.');
+  const head = ['발주일자','부서','분류','계약구분','품목명','품목코드','수량','단가','금액'];
+  const body = rows.map(r => [r.date, state.dept, r.category, r.procurementType,
+    r.item, r.itemCode, r.qty, r.unitPrice, r.amt]);
+  const csv = [head, ...body]
+    .map(line => line.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(','))
+    .join('\r\n');
+  // 엑셀이 한글을 깨뜨리지 않게 BOM 을 붙입니다.
+  const blob = new Blob(['﻿' + csv], { type:'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `구매내역_${state.dept}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* 부서 아이디 찾기 — 부서명·아이디 아무거나로 걸러 줍니다 */
+const didq = $('#didq');
+if (didq) {
+  didq.addEventListener('input', function () {
+    const q = didq.value.trim().toLowerCase();
+    document.querySelectorAll('#didlist li').forEach(function (li) {
+      li.classList.toggle('off', !!q && li.textContent.toLowerCase().indexOf(q) < 0);
+    });
+  });
+}
+
+$('#loginForm').addEventListener('submit', login);
+$('#pwEye').addEventListener('click', () => {
+  const pw = $('#upw');
+  const show = pw.type === 'password';
+  pw.type = show ? 'text' : 'password';
+  $('#pwEye').textContent = show ? '숨기기' : '보기';
+});
+$('#logout').addEventListener('click', logout);
+$('#deptPick').addEventListener('change', () => { $('#catSel').value = ''; load(); });
+$('#yearSel').addEventListener('change', load);
+$('#catSel').addEventListener('change', render);
+$('#q').addEventListener('input', render);
+$('#csv').addEventListener('click', downloadCsv);
+
+// 저장된 세션이 있으면 바로 들어갑니다.
+session = readSession();
+if (session && session.access_token) enterApp();
+else $('#uid').focus();
+</script>
+</body>
+</html>

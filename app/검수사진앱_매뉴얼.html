@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>검수사진 앱 매뉴얼</title>
+<style>
+:root{
+  --bg:#f5f6f8; --panel:#fff; --line:#e3e6ec; --text:#1c2030; --muted:#6b7280;
+  --accent:#1565C0; --accent-2:#0D47A1; --soft:#eef4ff; --warn:#b45309; --warn-bg:#fef3c7;
+  --ok:#0f9d58; --ok-bg:#e8f5e9; --radius:12px;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.06);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#12141a; --panel:#1a1d25; --line:#2b3040; --text:#e8eaf0; --muted:#9aa1b1;
+    --accent:#6ea8ff; --accent-2:#8fc0ff; --soft:#1b2333; --warn-bg:#3a2c08; --warn:#fbbf24;
+    --ok:#4ade80; --ok-bg:#12291a;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12141a; --panel:#1a1d25; --line:#2b3040; --text:#e8eaf0; --muted:#9aa1b1;
+  --accent:#6ea8ff; --accent-2:#8fc0ff; --soft:#1b2333; --warn-bg:#3a2c08; --warn:#fbbf24;
+  --ok:#4ade80; --ok-bg:#12291a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  font-size:14px;line-height:1.7;word-break:keep-all}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 60px}
+
+header{position:sticky;top:0;z-index:20;background:var(--panel);border-bottom:1px solid var(--line)}
+.htop{max-width:900px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:14px}
+.brand-txt{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.brand-name{font-size:17px;font-weight:800}
+.brand-sub{font-size:11px;font-weight:600;color:var(--muted);margin-top:3px}
+.spacer{flex:1}
+.navb{padding:6px 12px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--muted);
+  border:1px solid var(--line);background:var(--panel);text-decoration:none;white-space:nowrap}
+.navb:hover{color:var(--accent);border-color:var(--accent)}
+
+h1{font-size:26px;margin:34px 0 6px;letter-spacing:-.4px}
+.lede{color:var(--muted);margin:0 0 20px}
+h2{font-size:19px;margin:40px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--accent);display:flex;align-items:center;gap:9px}
+.tag{display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 7px;border-radius:7px;
+  background:var(--accent);color:#fff;font-size:12px;font-weight:800}
+h3{font-size:15.5px;margin:24px 0 8px;color:var(--accent-2)}
+p{margin:9px 0}
+ul,ol{margin:9px 0;padding-left:22px}
+li{margin:5px 0}
+code{background:var(--soft);padding:2px 6px;border-radius:5px;font-size:12.5px;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;word-break:break-all}
+pre{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:13px 15px;overflow-x:auto;margin:12px 0}
+pre code{background:none;padding:0;font-size:12.5px;line-height:1.65}
+.btn{display:inline-block;padding:0 7px;border:1px solid var(--line);border-radius:5px;
+  background:var(--panel);font-size:12.5px;font-weight:700;white-space:nowrap}
+
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:var(--soft);font-weight:700;font-size:12.5px}
+td b{color:var(--accent-2)}
+
+.box{border-radius:10px;padding:13px 16px;margin:14px 0;font-size:13.2px;border:1px solid var(--line);background:var(--panel)}
+.box .lbl{display:inline-block;font-weight:800;font-size:11.5px;letter-spacing:.02em;
+  padding:2px 8px;border-radius:99px;margin-right:8px}
+.box.warn{background:var(--warn-bg);border-color:transparent}
+.box.warn .lbl{background:var(--warn);color:#fff}
+.box.info{background:var(--soft)}
+.box.info .lbl{background:var(--accent);color:#fff}
+
+.toc{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px;margin:18px 0}
+.toc ol{margin:4px 0;padding-left:20px;columns:2;column-gap:28px}
+.toc a{color:var(--text);text-decoration:none}
+.toc a:hover{color:var(--accent)}
+
+figure.shot{margin:16px 0;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+figure.shot img{max-width:min(290px,72vw);width:100%;border-radius:12px;
+  border:1px solid var(--line);box-shadow:0 6px 20px rgba(16,24,40,.12);display:block}
+figure.shot figcaption{font-size:12px;color:var(--muted);line-height:1.6;max-width:min(520px,92vw)}
+figure.shot figcaption b{color:var(--text)}
+.shots{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.shots figure.shot{margin:0;flex:0 1 auto}
+
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:9px;
+  padding:9px 13px;font-size:13px;font-weight:700;box-shadow:var(--shadow)}
+.flow i{color:var(--muted);font-style:normal}
+
+footer{max-width:900px;margin:30px auto 0;padding:14px 20px 0;border-top:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:8px;font-size:11px;color:var(--muted)}
+footer b{color:var(--text)}
+
+@media (max-width:640px){
+  .brand-sub{display:none}
+}
+@media (max-width:560px){
+  .wrap{padding:0 16px 48px}
+  h1{font-size:21px}
+  h2{font-size:17px}
+  table{display:block;overflow-x:auto;font-size:12.2px}
+  .toc ol{columns:1}
+}
+@media print{
+  header{position:static}
+  .navb{display:none}
+  body{background:#fff}
+  h2{break-after:avoid}
+  table,.box,figure{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="htop">
+    <span class="brand-txt">
+      <span class="brand-name">검수사진 앱 매뉴얼</span>
+      <span class="brand-sub">사업지원본부 · 전략구매팀 · v1.1</span>
+    </span>
+    <span class="spacer"></span>
+    <a class="navb" href="https://fiti-procurement-portal.vercel.app/" title="전략구매팀 업무포털로 이동">← 업무포털</a>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h1>검수사진 앱 (GRfiti) 사용 매뉴얼</h1>
+<p class="lede">
+  구매건을 고르고 사진을 찍으면 사내 파일서버의 부서 폴더에 자동으로 저장되는 앱입니다.<br>
+  사진을 메신저로 따로 보내거나 폴더에 옮길 필요가 없습니다.
+</p>
+
+<nav class="toc" aria-label="목차">
+  <ol>
+    <li><a href="#s1">개요</a></li>
+    <li><a href="#s2">설치 — 안드로이드</a></li>
+    <li><a href="#s3">설치 — 아이폰</a></li>
+    <li><a href="#s4">처음 설정</a></li>
+    <li><a href="#s5">로그인</a></li>
+    <li><a href="#s6">구매건 선택</a></li>
+    <li><a href="#s7">촬영</a></li>
+    <li><a href="#s8">확인 및 저장</a></li>
+    <li><a href="#s9">저장 위치</a></li>
+    <li><a href="#s10">문제 해결</a></li>
+    <li><a href="#s11">설정 항목</a></li>
+  </ol>
+</nav>
+
+
+<h2 id="s1"><span class="tag">01</span> 개요</h2>
+
+<h3>1-1. 사용 순서</h3>
+<div class="flow">
+  <span>로그인</span><i>→</i>
+  <span>구매건 선택</span><i>→</i>
+  <span>검수자 이름 입력</span><i>→</i>
+  <span>촬영</span><i>→</i>
+  <span>저장</span><i>→</i>
+  <span>파일서버 자동 저장</span>
+</div>
+
+<h3>1-2. 구매건 목록</h3>
+<p>앱에 보이는 구매건은 구매요청 데이터 중 <b>발주가 끝나고 아직 입고되지 않은 건</b>입니다.
+   로그인한 <b>부서의 건만</b> 보입니다. 구매번호를 직접 입력하거나 스캔할 필요 없이 목록에서 고르면 됩니다.</p>
+
+<h3>1-3. 지원 기기</h3>
+<table>
+  <tr><th>구분</th><th>설치 방법</th></tr>
+  <tr><td>안드로이드</td><td>설치 파일(APK)을 받아 직접 설치 — <a href="#s2">2장</a></td></tr>
+  <tr><td>아이폰</td><td>전략구매팀이 기기에 직접 설치 — <a href="#s3">3장</a></td></tr>
+</table>
+
+
+<h2 id="s2"><span class="tag">02</span> 설치 — 안드로이드</h2>
+
+<p>이 앱은 Play 스토어가 아니라 설치 파일(APK)로 배포합니다.
+   안드로이드는 스토어 밖에서 받은 앱을 기본으로 막아 두므로, 설치할 때 아래 보안 설정을 한 번 허용해야 합니다.</p>
+
+<h3>2-1. 설치 파일 받기</h3>
+<ol>
+  <li>전략구매팀에서 받은 <code>GRfiti.apk</code> 파일을 휴대폰에 내려받습니다.</li>
+  <li><b>내 파일 → 다운로드</b> 폴더(또는 받은 메신저의 파일 목록)에서 파일을 누릅니다.</li>
+</ol>
+
+<h3>2-2. 출처를 알 수 없는 앱 허용</h3>
+<p>파일을 누르면 「보안을 위해 이 출처의 알 수 없는 앱을 설치할 수 없습니다」 안내가 나옵니다.</p>
+<ol>
+  <li>안내창의 <span class="btn">설정</span>을 누릅니다.</li>
+  <li><b>이 출처 허용</b>(또는 「출처를 알 수 없는 앱 설치」)을 켭니다.</li>
+  <li>뒤로 돌아와 <span class="btn">설치</span>를 누릅니다.</li>
+</ol>
+<p>안내창이 나오지 않으면 직접 켭니다.</p>
+<table>
+  <tr><th>기종</th><th>경로</th></tr>
+  <tr><td>삼성 갤럭시</td><td>설정 → 애플리케이션 → 우측 상단 ⋮ → <b>특별한 접근</b> → <b>알 수 없는 앱 설치</b> → 파일을 연 앱(내 파일 등) → 허용</td></tr>
+  <tr><td>그 밖의 기종</td><td>설정 → 앱 → 특별한 앱 액세스 → 알 수 없는 앱 설치 → 파일을 연 앱 → 허용</td></tr>
+</table>
+
+<h3>2-3. 자동 차단 해제 (삼성 갤럭시)</h3>
+<p>최근 갤럭시(One UI 6 이상)는 <b>자동 차단</b>이 켜져 있으면 2-2를 허용해도 설치가 막힙니다.</p>
+<ol>
+  <li>설정 → <b>보안 및 개인정보 보호</b> → <b>자동 차단</b></li>
+  <li>스위치를 <b>끔</b>으로 바꿉니다.</li>
+  <li>설치가 끝나면 다시 켜도 앱 사용에는 지장이 없습니다.</li>
+</ol>
+
+<h3>2-4. Play 프로텍트 경고</h3>
+<p>설치 중 「Play 프로텍트에서 앱을 차단했습니다」 또는 「안전하지 않은 앱」 안내가 나올 수 있습니다.
+   사내 배포 앱이라 Google 에 등록되지 않아서 나오는 안내입니다.</p>
+<ol>
+  <li><span class="btn">세부정보 더보기</span>를 누릅니다.</li>
+  <li><span class="btn">무시하고 설치</span>(또는 「그래도 설치」)를 누릅니다.</li>
+  <li>「앱 검사를 위해 보내시겠습니까」가 나오면 <span class="btn">보내지 않음</span>을 눌러도 됩니다.</li>
+</ol>
+
+<figure class="shot">
+  <img src="화면_홈아이콘.jpg" alt="휴대폰 홈 화면의 GRfiti 앱 아이콘">
+  <figcaption>설치가 끝나면 홈 화면 또는 앱 목록에 <b>GRfiti</b> 아이콘이 생깁니다.</figcaption>
+</figure>
+
+<div class="box info"><span class="lbl">참고</span>
+  설치를 마친 뒤에는 2-2의 「이 출처 허용」을 다시 꺼 두셔도 됩니다. 앱은 그대로 사용할 수 있습니다.
+</div>
+
+
+<h2 id="s3"><span class="tag">03</span> 설치 — 아이폰</h2>
+
+<p>아이폰은 전략구매팀이 기기를 Mac 에 연결해 설치해 드립니다. 설치 후 아래 두 가지를 기기에서 허용해야 앱이 열립니다.</p>
+
+<h3>3-1. 개발자 모드 켜기 (처음 한 번)</h3>
+<ol>
+  <li>설정 → <b>개인정보 보호 및 보안</b> → 맨 아래 <b>개발자 모드</b> → 켬</li>
+  <li><span class="btn">재시동</span>을 누릅니다.</li>
+  <li>재시동 후 나오는 안내에서 <span class="btn">켜기</span>를 누르고 암호를 입력합니다.</li>
+</ol>
+
+<h3>3-2. 개발자 앱 신뢰</h3>
+<p>앱을 처음 누르면 「신뢰하지 않는 개발자」 안내가 나옵니다.</p>
+<ol>
+  <li>설정 → 일반 → <b>VPN 및 기기 관리</b></li>
+  <li>「개발자 앱」 아래의 Apple ID 항목을 누릅니다.</li>
+  <li><span class="btn">신뢰</span>를 누르고 한 번 더 <span class="btn">신뢰</span>를 누릅니다.</li>
+</ol>
+
+<div class="box warn"><span class="lbl">주의</span>
+  아이폰 설치본은 <b>7일마다 다시 설치</b>해야 합니다. 앱이 열리지 않으면 전략구매팀에 요청해 주세요.
+</div>
+
+
+<h2 id="s4"><span class="tag">04</span> 처음 설정</h2>
+
+<h3>4-1. 권한 허용</h3>
+<p>처음 촬영 화면에 들어가면 권한을 묻습니다. 모두 <b>허용</b>해 주세요.</p>
+<table>
+  <tr><th>권한</th><th>용도</th></tr>
+  <tr><td>카메라</td><td>검수 사진 촬영</td></tr>
+  <tr><td>위치 (앱 사용 중에만)</td><td>사진 파일에 촬영 장소 기록. 허용해야 촬영 버튼이 켜집니다</td></tr>
+  <tr><td>로컬 네트워크 (아이폰)</td><td>사내 파일서버에 사진 저장</td></tr>
+  <tr><td>사진 추가 (아이폰)</td><td>촬영한 사진을 앨범에도 저장</td></tr>
+</table>
+
+<div class="box warn"><span class="lbl">아이폰</span>
+  「로컬 네트워크」를 거부하면 파일서버에 저장되지 않습니다.
+  거부했다면 설정 → GRfiti → <b>로컬 네트워크</b>를 켜 주세요.
+</div>
+
+<h3>4-2. 파일서버 계정 입력</h3>
+<p>사진을 파일서버에 저장하려면 기기마다 한 번 계정을 넣어야 합니다.</p>
+<ol>
+  <li>구매건 선택 화면 왼쪽 위 <span class="btn">설정</span>을 누릅니다.</li>
+  <li><b>서버 IP 주소</b>가 <code>192.168.1.8</code> 인지 확인합니다.</li>
+  <li><b>SMB 아이디</b>와 <b>SMB 비밀번호</b>에 PC 로그인 계정을 입력합니다.</li>
+  <li><span class="btn">연결 테스트</span>를 눌러 「✅ 연결 성공!」을 확인합니다.</li>
+  <li>맨 아래 <span class="btn">설정 저장</span>을 누릅니다.</li>
+</ol>
+
+<div class="box warn"><span class="lbl">주의</span>
+  <b>「설정 저장」을 누르지 않으면</b> 사진이 휴대폰에만 저장되고 파일서버에는 올라가지 않습니다.
+  연결 테스트는 사내 와이파이에 연결된 상태에서 해 주세요.
+</div>
+
+
+<h2 id="s5"><span class="tag">05</span> 로그인</h2>
+
+<ol>
+  <li>앱을 엽니다. 첫 화면 제목은 「FITI시험연구원 검수사진촬영앱」입니다.</li>
+  <li>부서에 안내된 <b>아이디</b>와 <b>비밀번호</b>를 입력합니다. 아이디만 입력하면 되고, 뒤에 붙는 주소는 자동으로 처리됩니다.</li>
+  <li><span class="btn">로그인</span>을 누릅니다.</li>
+</ol>
+<p>한 번 로그인하면 <b>로그아웃하기 전까지 유지</b>됩니다. 다음부터는 앱을 열면 바로 구매건 목록이 나옵니다.</p>
+
+
+<h2 id="s6"><span class="tag">06</span> 구매건 선택</h2>
+
+<p>화면 위에 「○○팀 로그인중」이 보이고, 그 아래에 구매건 목록이 나옵니다.</p>
+<table>
+  <tr><th>항목</th><th>내용</th></tr>
+  <tr><td>구매번호</td><td>구매요청 번호 (예: <code>S202609280005</code>)</td></tr>
+  <tr><td>신청자</td><td>구매를 요청한 직원</td></tr>
+  <tr><td>금액</td><td>요청 금액</td></tr>
+</table>
+
+<h3>6-1. 선택 순서</h3>
+<ol>
+  <li>검수할 구매건의 줄을 누릅니다.</li>
+  <li>「구매건 확인」 창에서 구매번호·신청자·금액을 확인하고 <span class="btn">예</span>를 누릅니다.</li>
+  <li>「사용자 이름을 입력해주세요」 창이 나옵니다. <b>검수자 이름</b>을 확인합니다.
+    <ul>
+      <li>신청자 이름이 미리 채워져 있습니다. 신청자가 직접 검수하면 그대로 <span class="btn">확인</span>을 누릅니다.</li>
+      <li>다른 사람이 검수하면 <span class="btn">지우기</span>를 누르고 검수자 이름을 입력한 뒤 <span class="btn">확인</span>을 누릅니다.</li>
+    </ul>
+  </li>
+  <li>촬영 화면으로 넘어갑니다.</li>
+</ol>
+
+<h3>6-2. 상단 버튼</h3>
+<table>
+  <tr><th>버튼</th><th>기능</th></tr>
+  <tr><td><span class="btn">설정</span></td><td>설정 화면 (<a href="#s11">11장</a>)</td></tr>
+  <tr><td><span class="btn">새로고침</span></td><td>목록을 다시 불러옵니다</td></tr>
+  <tr><td><span class="btn">로그아웃</span></td><td>로그아웃 후 로그인 화면으로 돌아갑니다</td></tr>
+</table>
+
+<div class="box info"><span class="lbl">참고</span>
+  사진을 저장해도 구매건은 목록에 그대로 남습니다. 같은 건을 여러 번 찍을 수 있도록 한 것입니다.
+  <b>입고(검수) 처리가 끝나면</b> 목록에서 빠지며, <span class="btn">새로고침</span>을 누르면 반영됩니다.
+  찾는 건이 없으면 전략구매팀에 문의해 주세요.
+</div>
+
+
+<h2 id="s7"><span class="tag">07</span> 촬영</h2>
+
+<ol>
+  <li>왼쪽 위 상자에 고른 <b>구매번호</b>가 표시되는지 확인합니다.</li>
+  <li>물품이 화면에 잘 들어오게 맞춥니다.</li>
+  <li>아래쪽 흰 원(셔터)을 누릅니다.</li>
+</ol>
+
+<table>
+  <tr><th>조작</th><th>기능</th></tr>
+  <tr><td>화면 한 번 누르기</td><td>그 지점에 초점과 밝기를 맞춥니다. 옆의 ☀ 막대를 위아래로 끌면 밝기가 바뀝니다</td></tr>
+  <tr><td>두 손가락 벌리기·모으기</td><td>확대·축소</td></tr>
+  <tr><td>「세로」·「가로」 버튼</td><td>화면 방향 고정</td></tr>
+  <tr><td>오른쪽 위 톱니</td><td>비율(4:3 · 16:9 · 1:1) · 화질 · 설정 · 파일 메뉴</td></tr>
+  <tr><td>구매번호 상자 누르기</td><td>구매건 목록으로 돌아가기</td></tr>
+</table>
+
+<div class="box info"><span class="lbl">참고</span>
+  셔터가 흐리게 보이면 아직 위치를 확인하는 중입니다. 잠시 기다리면 켜집니다.
+  「위치 서비스 꺼짐」 안내가 나오면 휴대폰의 위치(GPS)를 켜 주세요.
+</div>
+
+
+<h2 id="s8"><span class="tag">08</span> 확인 및 저장</h2>
+
+<p>촬영하면 미리보기 화면이 나옵니다.</p>
+<ol>
+  <li>사진이 잘 찍혔는지 확인합니다. 방향이 틀어졌으면 위쪽 회전 버튼으로 돌립니다.</li>
+  <li>다시 찍으려면 <span class="btn">다시찍기</span>, 괜찮으면 <span class="btn">저장</span>을 누릅니다.</li>
+  <li>「진위확인 코드 발급 중...」 → 「저장 중...」이 차례로 표시됩니다.</li>
+  <li>「저장 완료 (로컬+SMB)」가 뜨면 파일서버까지 저장된 것입니다. 촬영 화면으로 돌아오므로 이어서 찍을 수 있습니다.</li>
+</ol>
+
+<h3>8-1. 사진에 표시되는 내용</h3>
+<p>저장된 사진에는 아래 내용이 비스듬한 글씨로 표시됩니다. 사진 가운데는 가리지 않습니다.</p>
+<pre><code>구매번호 / 신청자 / 촬영 일시 / 검수자 / 진위확인코드(8자리)</code></pre>
+<p>진위확인코드는 이 앱으로 찍은 원본 사진인지 확인할 때 쓰는 번호입니다.
+   미리보기에서는 <code>XXXXXXXX</code> 로 보이고, 저장할 때 실제 번호가 들어갑니다.</p>
+
+<div class="box info"><span class="lbl">참고</span>
+  한 구매건에 여러 장이 필요하면 촬영 → 저장을 반복하면 됩니다. 다른 구매건으로 바꾸려면 왼쪽 위 구매번호 상자를 누릅니다.
+</div>
+
+
+<h2 id="s9"><span class="tag">09</span> 저장 위치</h2>
+
+<h3>9-1. 파일서버</h3>
+<p>사진은 로그인한 부서 이름의 폴더에 저장됩니다. 폴더가 없으면 자동으로 만들어집니다.</p>
+<pre><code>\\192.168.1.8\소모품검수사진\
+  └ 역학성능평가팀\
+      └ (홍길동)S202609280005_260929143012.jpg</code></pre>
+
+<table>
+  <tr><th>파일명 부분</th><th>내용</th></tr>
+  <tr><td><code>(홍길동)</code></td><td>검수자 이름 (6-1에서 입력한 이름)</td></tr>
+  <tr><td><code>S202609280005</code></td><td>구매번호</td></tr>
+  <tr><td><code>260929143012</code></td><td>촬영 일시 (연월일시분초, 2026-09-29 14:30:12)</td></tr>
+</table>
+
+<h3>9-2. 휴대폰</h3>
+<p>파일서버와 별도로 휴대폰에도 같은 사진이 남습니다.</p>
+<table>
+  <tr><th>기기</th><th>위치</th></tr>
+  <tr><td>안드로이드</td><td>갤러리의 <b>Pictures/GRfiti</b> 앨범</td></tr>
+  <tr><td>아이폰</td><td>사진 앱</td></tr>
+</table>
+
+<h3>9-3. 앱에서 확인</h3>
+<p>촬영 화면 톱니 → <span class="btn">파일</span>을 누르면 파일서버에 저장된 사진을 폴더별로 볼 수 있습니다. 보기만 가능합니다.</p>
+
+<h3>9-4. 구매번호 접두어</h3>
+<table>
+  <tr><th>접두어</th><th>구매 유형</th></tr>
+  <tr><td><b>S</b></td><td>소모품</td></tr>
+  <tr><td><b>P</b></td><td>일반 / 구매협조</td></tr>
+  <tr><td><b>R</b></td><td>시험기기 수리</td></tr>
+  <tr><td><b>CS</b></td><td>입찰-소모품</td></tr>
+  <tr><td><b>CB</b></td><td>입찰-사업비</td></tr>
+  <tr><td><b>CP</b></td><td>입찰-일반</td></tr>
+</table>
+
+
+<h2 id="s10"><span class="tag">10</span> 문제 해결</h2>
+
+<table>
+  <tr><th>증상</th><th>조치</th></tr>
+  <tr><td>로그인이 안 됨</td><td>아이디·비밀번호를 다시 확인합니다. 계속 안 되면 전략구매팀에 계정 확인을 요청합니다</td></tr>
+  <tr><td>「표시할 구매건이 없습니다」</td><td>발주 완료·미입고 건이 없는 상태입니다. <span class="btn">새로고침</span>을 눌러 봅니다</td></tr>
+  <tr><td>사진을 저장했는데 목록에 남아 있음</td><td>정상입니다. 입고(검수) 처리가 끝나야 목록에서 빠집니다. 처리 후 <span class="btn">새로고침</span>을 누르면 사라집니다</td></tr>
+  <tr><td>「구매목록을 불러오지 못했습니다」</td><td>인터넷 연결 확인 후 <span class="btn">새로고침</span></td></tr>
+  <tr><td>셔터가 눌리지 않음</td><td>위치 권한과 휴대폰 위치(GPS)가 켜져 있는지 확인합니다</td></tr>
+  <tr><td>「진위확인 코드 발급 실패」</td><td>신호가 약한 곳입니다. 창에서 <span class="btn">다시 시도</span>를 누르거나, <span class="btn">닫기</span> 후 신호가 좋은 곳에서 <span class="btn">저장</span>을 다시 누릅니다. 이때는 사진이 아직 저장되지 않은 상태입니다</td></tr>
+  <tr><td>「로컬 저장 완료. SMB 실패 → 대기열 추가」</td><td>휴대폰에는 저장됐고 파일서버에만 못 올라간 상태입니다. 사내 와이파이에 연결한 뒤 설정 → <span class="btn">대기 중인 SMB 업로드 재시도</span>를 누릅니다</td></tr>
+  <tr><td>「저장 완료 (로컬)」만 뜸</td><td>파일서버 계정이 저장되지 않은 상태입니다. <a href="#s4">4-2</a>를 진행합니다</td></tr>
+  <tr><td>「로그인이 만료됐어요」</td><td>다시 로그인합니다</td></tr>
+  <tr><td>「중복 파일」</td><td><span class="btn">확인</span>을 누르면 새 사진으로 저장됩니다</td></tr>
+  <tr><td>아이폰에서 앱이 열리지 않음</td><td>설치 후 7일이 지났을 수 있습니다. 전략구매팀에 재설치를 요청합니다</td></tr>
+</table>
+
+<div class="box warn"><span class="lbl">주의</span>
+  파일서버는 <b>사내 와이파이</b>에서만 연결됩니다. 외부에서 찍은 사진은 사내에 돌아와 재시도해 주세요.
+</div>
+
+
+<h2 id="s11"><span class="tag">11</span> 설정 항목</h2>
+
+<div class="shots">
+<figure class="shot">
+  <img src="화면_설정.jpg" alt="설정 화면 — 서버 설정, 저장 경로, 기능 설정">
+  <figcaption><b>설정 화면.</b> 서버 설정 · 저장 경로 · 기능 설정 순서입니다.</figcaption>
+</figure>
+<figure class="shot">
+  <img src="화면_폴더선택.jpg" alt="저장 폴더를 고르는 화면">
+  <figcaption><b>기본 경로 수정</b> 화면. 폴더를 눌러 들어간 뒤 <b>이 폴더 선택</b>을 누릅니다.</figcaption>
+</figure>
+</div>
+
+<table>
+  <tr><th>구분</th><th>항목</th><th>기본값</th><th>설명</th></tr>
+  <tr><td rowspan="4">서버 설정</td><td>서버 IP 주소</td><td><code>192.168.1.8</code></td><td>사내 파일서버. 바꾸지 않습니다</td></tr>
+  <tr><td>SMB 아이디 · 비밀번호</td><td>—</td><td>PC 로그인 계정. 저장 후에는 화면에 다시 표시되지 않으며, 바꿀 때만 입력합니다</td></tr>
+  <tr><td>연결 테스트</td><td>—</td><td>파일서버 연결 확인</td></tr>
+  <tr><td>SMB 자동 저장</td><td>켬</td><td>저장할 때 파일서버에 함께 저장. 켜 둡니다</td></tr>
+  <tr><td>저장 경로</td><td>기본 경로</td><td><code>소모품검수사진</code></td><td>부서 폴더가 만들어지는 상위 폴더. 바꾸지 않습니다</td></tr>
+  <tr><td rowspan="2">기능 설정</td><td>이미지 품질</td><td>고 (원본)</td><td>저(약 1MB) · 중(약 3MB) · 고(원본)</td></tr>
+  <tr><td>기본 카메라 비율</td><td>4:3</td><td>4:3 · 16:9 · 1:1</td></tr>
+  <tr><td rowspan="2">하단 버튼</td><td>대기 중인 SMB 업로드 재시도</td><td>—</td><td>파일서버에 못 올라간 사진을 다시 올립니다</td></tr>
+  <tr><td>설정 저장</td><td>—</td><td>바꾼 설정을 저장합니다. <b>꼭 눌러야 반영됩니다</b></td></tr>
+</table>
+
+</div>
+
+<footer>
+  <span><b>(재)FITI시험연구원</b> 사업지원본부 · 전략구매팀</span>
+  <span style="opacity:.5">·</span><span>검수사진 앱 매뉴얼 v1.1</span>
+  <span style="opacity:.5">·</span><span>문의 : 전략구매팀 (내선 8124)</span>
+</footer>
+
+</body>
+</html>
