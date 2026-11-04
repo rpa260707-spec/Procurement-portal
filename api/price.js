@@ -37,17 +37,33 @@ export default async function handler(req, res) {
 
     const html = await r.text();
 
+    /* 「자료 올리기」로 서버에 올라온 발주 이력이 있으면 그것이 최신입니다.
+       페이지 안에 박힌 값은 올린 뒤에도 그대로라 먼저 이쪽을 봅니다.
+       못 읽거나 비어 있으면 아래 옛 방식(페이지 긁기)으로 돌아갑니다. */
+    let up = null;
+    try {
+      const pr = await fetch(SOURCE + 'api/purchases', {
+        headers: { 'User-Agent': 'fiti-portal' }, cache: 'no-store'
+      });
+      if (pr.ok) {
+        const j = await pr.json();
+        if (j && Array.isArray(j.rows) && j.rows.length) up = j;
+      }
+    } catch (e) { /* 옛 방식으로 */ }
+
     // 발주 이력이 있는 품목 — 각 레코드의 "k" 키 개수와 정확히 일치합니다.
-    const ordered = new Set(
-      [...html.matchAll(/"k":"([^"]+)"/g)].map((m) => m[1])
-    ).size;
+    const ordered = up
+      ? up.rows.length
+      : new Set([...html.matchAll(/"k":"([^"]+)"/g)].map((m) => m[1])).size;
 
     // 단가 정보를 가진 전체 품목코드 (발주이력 + 단가표)
-    const codes = new Set(
-      [...html.matchAll(/"code":"([^"]+)"/g)].map((m) => m[1])
-    ).size;
+    const codeSet = new Set([...html.matchAll(/"code":"([^"]+)"/g)].map((m) => m[1]));
+    if (up) up.rows.forEach((x) => { if (x.code) codeSet.add(x.code); });
+    const codes = codeSet.size;
 
-    const y2026 = countMatches(html, /"2026":\[/g);
+    const y2026 = up
+      ? up.rows.filter((x) => x.y && x.y['2026']).length
+      : countMatches(html, /"2026":\[/g);
 
     /* 품목별 발주 기록을 훑어 상위 목록을 만듭니다.
        페이지 안 레코드 형태:
@@ -63,7 +79,23 @@ export default async function handler(req, res) {
 
     const recs = [];
     let m;
-    while ((m = REC.exec(html)) !== null) {
+    if (up) {
+      for (const x of up.rows) {
+        if (!KEEP.includes(x.kind || '')) continue;
+        recs.push({
+          code: x.code || '',
+          name: x.name || '',
+          count: Number(x.n) || 0,
+          qty: Number(x.qty) || 0,
+          amount: Number(x.amt) || 0,
+          last: x.last || '',
+          unitPrice: Number(x.lp) || 0,
+          vendor: x.ven || '',
+          kind: x.kind
+        });
+      }
+    }
+    while (!up && (m = REC.exec(html)) !== null) {
       const kind = m[11] || '';
       if (!KEEP.includes(kind)) continue;
 
@@ -113,6 +145,8 @@ export default async function handler(req, res) {
     return res.status(200).json({
       success: true,
       source: SOURCE,
+      asOf: up ? (up.asOf || '') : '',   // 올린 자료의 기준일(없으면 빈 값)
+      fromUpload: !!up,
       ordered,   // 발주 이력 품목 수
       codes,     // 단가 정보 보유 품목코드 수
       y2026,     // 26년 발주 실적이 있는 품목 수
