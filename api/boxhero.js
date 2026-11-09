@@ -110,7 +110,7 @@ export default async function handler(req, res) {
     // 오늘 것이 없으면 최근 거래라도 보여 줍니다.
     const listSource = rows.length ? rows : byType;
 
-    const head = listSource.slice(0, 5);
+    const head = listSource.slice(0, 20);   // 카드 안에서 스크롤 (11-06)
 
     // 품목명은 상세에만 있습니다. 대시보드가 느렸던 건 **모든** 거래의 상세를 불렀기 때문이고,
     // 여기서는 화면에 보여 줄 5건만 병렬로 받습니다. (1 + 5 회)

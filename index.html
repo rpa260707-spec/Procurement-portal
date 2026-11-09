@@ -578,7 +578,7 @@ footer b{ color:var(--text-2); font-weight:700; }
 .txchip:hover{ border-color:var(--accent); color:var(--accent); }
 .txchip.on{ background:var(--accent); border-color:var(--accent); color:#fff; }
 
-.txlist{ display:flex; flex-direction:column; }
+.txlist{ display:flex; flex-direction:column; max-height:520px; overflow-y:auto; overscroll-behavior:contain; }
 .tx{
   display:flex; gap:10px; padding:10px 2px;
   border-top:1px solid var(--border); text-decoration:none; color:inherit;
@@ -1694,7 +1694,7 @@ footer b{ color:var(--text-2); font-weight:700; }
         var all = (j && j.items) || [];
         var today = kstParts(new Date().toISOString()).date;
         var rows  = all.filter(function(t){ return kstParts(t.transaction_time).date === today; });
-        var head  = (rows.length ? rows : all).slice(0, 5);
+        var head  = (rows.length ? rows : all).slice(0, 20);
 
         // 품목명은 상세에만 있습니다. 화면에 띄울 5건만 받습니다.
         // 총 재고 수 — 창고 목록 한 번이면 됩니다(창고마다 quantity 가 있음)
