@@ -820,6 +820,17 @@ footer b{ color:var(--text-2); font-weight:700; }
   .market__note{ font-size:10px; }
 }
 </style>
+<style id="fiti-mobile">
+/* 폰 가독성 공통(2026-11-11) — 640px 이하에서 작은 글씨를 13px 로 올리고, 단어 중간 줄바꿈 · 가로 넘침을 막습니다 */
+@media (max-width:640px){
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  body{word-break:keep-all;overflow-wrap:break-word;overflow-x:hidden}
+  small,th,td,li,dd,dt,summary,figcaption,label,.card__k,.cb__foot,.rate__u,.hint,.msg,.muted,.text-xs,.text-\[10px\],.text-\[11px\]{font-size:13px!important;line-height:1.55}
+  img,video{max-width:100%;height:auto}
+  .cb__chips{flex-wrap:wrap!important;overflow:visible!important}
+  pre,code{white-space:pre-wrap}
+}
+</style>
 </head>
 <body>
 
