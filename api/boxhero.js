@@ -118,19 +118,25 @@ export default async function handler(req, res) {
     // 20건을 한꺼번에 부르면 박스히어로 호출 제한(429)에 걸려 뒤쪽이 「품목 정보 없음」이 됐습니다(11-17).
     // 4건씩 나눠 받고, 429 면 잠깐 쉬었다 두 번까지 다시 받습니다. 받은 상세는 기억해 둡니다.
     const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    const DIAG = {};   // 품목명을 못 얻은 이유 — 응답에 실어 원인을 봅니다(11-17)
     const getDetail = async (id) => {
       if (DETAIL_CACHE.has(id)) return DETAIL_CACHE.get(id);
       for (let a = 0; a < 3; a++) {
         try {
           const d = await fetch(`${BASE}/v1/transactions/${id}`, { headers: { Authorization: 'Bearer ' + token } });
-          if (d.status === 429) { await sleep(700 * (a + 1)); continue; }
-          if (!d.ok) return null;
+          if (d.status === 429) { DIAG[id] = '429'; await sleep(1200 * (a + 1)); continue; }
+          if (!d.ok) { DIAG[id] = 'http ' + d.status; return null; }
           const j = await d.json();
           const v = j?.item || j;
-          DETAIL_CACHE.set(id, v);
-          if (DETAIL_CACHE.size > 300) DETAIL_CACHE.delete(DETAIL_CACHE.keys().next().value);
+          const n = Array.isArray(v?.items) ? v.items.length : -1;
+          if (n > 0) {
+            DETAIL_CACHE.set(id, v);
+            if (DETAIL_CACHE.size > 300) DETAIL_CACHE.delete(DETAIL_CACHE.keys().next().value);
+          } else {
+            DIAG[id] = 'no items · keys=' + Object.keys(v || {}).slice(0, 12).join(',');
+          }
           return v;
-        } catch (e) { return null; }
+        } catch (e) { DIAG[id] = 'err ' + String(e && e.message || e).slice(0, 60); return null; }
       }
       return null;
     };
@@ -143,7 +149,9 @@ export default async function handler(req, res) {
 
     const recent = head.map((t, i) => {
       const lines = details[i]?.items || [];
-      const first = lines[0]?.item?.name || lines[0]?.name || '';
+      const l0 = lines[0] || {};
+      const first = l0?.item?.name || l0?.name || l0?.item_name || l0?.item?.sku || '';
+      if (!first && !DIAG[t.id] && lines.length) DIAG[t.id] = 'line keys=' + Object.keys(l0).slice(0, 12).join(',');
       const more = lines.length > 1 ? lines.length - 1 : 0;
 
       return {
@@ -154,6 +162,7 @@ export default async function handler(req, res) {
         kinds: Number(t?.count_of_items) || 0,
         qty: Math.abs(Number(t?.total_quantity) || 0),
         itemName: first,
+        diag: first ? undefined : (DIAG[t.id] || 'unknown'),
         moreCount: more,
         user: t?.created_by?.name || '',
         from: t?.from_location?.name || '',
