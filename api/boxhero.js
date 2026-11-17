@@ -13,6 +13,7 @@
 //   설정 후 반드시 Redeploy 해야 반영됩니다.
 
 const BASE = 'https://rest.boxhero-app.com';
+const DETAIL_CACHE = new Map();   // 거래 id → 상세 (함수가 살아 있는 동안만)
 
 // 박스히어로 본 서비스 주소 (팀 249001 · LOCATION 모드).
 // PC 는 웹앱으로, 폰은 유니버설 링크로 박스히어로 앱이 열립니다.
@@ -114,18 +115,31 @@ export default async function handler(req, res) {
 
     // 품목명은 상세에만 있습니다. 대시보드가 느렸던 건 **모든** 거래의 상세를 불렀기 때문이고,
     // 여기서는 화면에 보여 줄 5건만 병렬로 받습니다. (1 + 5 회)
-    const details = await Promise.all(head.map(async (t) => {
-      try {
-        const d = await fetch(`${BASE}/v1/transactions/${t.id}`, {
-          headers: { Authorization: 'Bearer ' + token }
-        });
-        if (!d.ok) return null;
-        const j = await d.json();
-        return j?.item || j;
-      } catch (e) {
-        return null;
+    // 20건을 한꺼번에 부르면 박스히어로 호출 제한(429)에 걸려 뒤쪽이 「품목 정보 없음」이 됐습니다(11-17).
+    // 4건씩 나눠 받고, 429 면 잠깐 쉬었다 두 번까지 다시 받습니다. 받은 상세는 기억해 둡니다.
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    const getDetail = async (id) => {
+      if (DETAIL_CACHE.has(id)) return DETAIL_CACHE.get(id);
+      for (let a = 0; a < 3; a++) {
+        try {
+          const d = await fetch(`${BASE}/v1/transactions/${id}`, { headers: { Authorization: 'Bearer ' + token } });
+          if (d.status === 429) { await sleep(700 * (a + 1)); continue; }
+          if (!d.ok) return null;
+          const j = await d.json();
+          const v = j?.item || j;
+          DETAIL_CACHE.set(id, v);
+          if (DETAIL_CACHE.size > 300) DETAIL_CACHE.delete(DETAIL_CACHE.keys().next().value);
+          return v;
+        } catch (e) { return null; }
       }
-    }));
+      return null;
+    };
+    const details = [];
+    for (let i = 0; i < head.length; i += 4) {
+      const part = await Promise.all(head.slice(i, i + 4).map((t) => getDetail(t.id)));
+      details.push(...part);
+      if (i + 4 < head.length) await sleep(250);
+    }
 
     const recent = head.map((t, i) => {
       const lines = details[i]?.items || [];
